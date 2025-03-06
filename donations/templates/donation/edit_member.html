@@ -1,0 +1,54 @@
+{% extends 'donation/base.html' %}
+{% block content %}
+<style>
+    .mt-4 {
+    margin-top: 6.5rem !important;
+    margin-bottom: 17px;
+}
+</style>
+<div class="container mt-4">
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Edit Member</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{% url 'admin_dashboard' %}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Members</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Edit Member</a>
+            </li>
+        </ul>
+    </div>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mobile</label>
+            <input type="text" name="mobile" class="form-control" value="{{ user.mobile }}" required>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" name="is_approved" class="form-check-input" {% if user.is_approved %}checked{% endif %}>
+            <label class="form-check-label">Approved</label>
+        </div>
+        <button type="submit" class="btn btn-success">Update</button>
+    </form>
+</div>
+{% endblock %}

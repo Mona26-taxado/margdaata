@@ -1,0 +1,201 @@
+{% extends 'donation/base.html' %}
+{% block title %}Add Member{% endblock %}
+{% block page_title %}Add Member{% endblock %}
+
+{% block content %}
+<style>
+    .page-inner {
+    padding: 72px 0;
+}
+</style>
+<div class="container">
+    <div class="page-inner">
+        <div class="page-header">
+            <h3 class="fw-bold mb-3">Add New Member</h3>
+            <ul class="breadcrumbs mb-3">
+                <li class="nav-home">
+                    <a href="{% url 'admin_dashboard' %}">
+                        <i class="icon-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">Members</a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">Add Member</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="text-center">Add Member</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_name" class="form-label">Full Name</label>
+                                    <input type="text" name="name" id="id_name" class="form-control" placeholder="Enter Full Name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter Email" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_mobile" class="form-label">Mobile</label>
+                                    <input type="text" name="mobile" id="id_mobile" class="form-control" placeholder="Enter Mobile Number" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_mobile_home" class="form-label">Home Mobile</label>
+                                    <input type="text" name="mobile_home" id="id_mobile_home" class="form-control" placeholder="Enter Home Mobile" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username">Username</label>
+                                    <input type="text" name="username" id="username" id="username" class="form-control" placeholder="Enter Username" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password1">Password</label>
+    <input type="text" name="password1" id="password1" class="form-control" placeholder="Enter Password" required>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password2">Confirm Password</label>
+    <input type="password" name="password2" id="password2" class="form-control" placeholder="Enter Confirm Password" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="role">Role</label>
+    <select name="role" id="role" class="form-select"required>
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_dob" class="form-label">Date of Birth</label>
+                                    <input type="date" name="dob" id="id_dob" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_pan" class="form-label">PAN</label>
+                                    <input type="text" name="pan" id="id_pan" class="form-control" placeholder="Enter PAN Number" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_gender" class="form-label">Gender</label>
+                                    <select name="gender" id="id_gender" class="form-select">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_home_district" class="form-label">Home District</label>
+                                    <input type="text" name="home_district" id="id_home_district" class="form-control" placeholder="Enter Home District">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="id_home_address" class="form-label">Home Address</label>
+                                <textarea name="home_address" id="id_home_address" class="form-control" rows="3" placeholder="Enter Home Address"></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_department" class="form-label">Department</label>
+                                    <input type="text" name="department" id="id_department" class="form-control" placeholder="Enter Department">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_post" class="form-label">Post</label>
+                                    <input type="text" name="post" id="id_post" class="form-control" placeholder="Enter Post">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_posting_district" class="form-label">Posting District</label>
+                                    <input type="text" name="posting_district" id="id_posting_district" class="form-control" placeholder="Enter Posting District">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_posting_block" class="form-label">Posting Block</label>
+                                    <input type="text" name="posting_block" id="id_posting_block" class="form-control" placeholder="Enter Posting Block">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_disease" class="form-label">Disease</label>
+                                    <input type="text" name="disease" id="id_disease" class="form-control" placeholder="Enter Disease (if any)">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_cause_of_illness" class="form-label">Cause of Illness</label>
+                                    <textarea name="cause_of_illness" id="id_cause_of_illness" class="form-control" rows="3" placeholder="Enter Cause of Illness"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary w-100">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("add-member-form").addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent default refresh
+
+        let formData = new FormData(this);
+        console.log("Form Data Sent:", Object.fromEntries(formData.entries())); // Debugging
+
+        fetch("{% url 'add_member' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Member added successfully!");
+                window.location.reload();
+            } else {
+                alert("Error: " + JSON.stringify(data.errors));
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+});
+
+</script>
+{% endblock %}
+
+
+

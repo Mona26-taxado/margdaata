@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Approve Customers</title>
+</head>
+<body>
+    <h2>Approve Customers</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for customer in customers %}
+            <p>{{ customer.name }} ({{ customer.email }}) - {{ customer.md_code }}</p>
+            <a href="{{ customer.payment_slip.url }}" target="_blank">View Payment Slip</a>
+            <button type="submit" name="customer_id" value="{{ customer.id }}">Approve</button>
+            {% if customer.approved %}
+                <a href="{% url 'generate_payment_receipt' customer.id %}" target="_blank">Download Receipt</a>
+            {% endif %}
+        {% endfor %}
+    </form>
+</body>
+</html>
+

@@ -1,0 +1,104 @@
+{% extends 'donation/base.html' %}
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .breadcrumb {
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+    }
+    .form-container {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 700px;
+        margin: auto;
+    }
+    .btn-submit {
+        width: 100%;
+        font-size: 18px;
+    }
+    .mt-4 {
+    margin-top: 5.5rem !important;
+}
+</style>
+
+<div class="container mt-4">
+    <!-- Breadcrumb Navigation -->
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Edit Sahyog</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{% url 'admin_dashboard' %}">
+                    <i class="icon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Members</a>
+            </li>
+            <li class="separator">
+                <i class="icon-arrow-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Edit Sahyog</a>
+            </li>
+        </ul>
+    </div>
+
+    <h2 class="text-center">Edit Sahyog</h2>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Sahyog Title:</label>
+                <input type="text" class="form-control" name="title" value="{{ form.title.value }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="account_holder_name" class="form-label">Account Holder Name:</label>
+                <input type="text" class="form-control" name="account_holder_name" value="{{ form.account_holder_name.value }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="bank_name" class="form-label">Bank Name:</label>
+                <input type="text" class="form-control" name="bank_name" value="{{ form.bank_name.value }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="account_number" class="form-label">Account Number:</label>
+                <input type="text" class="form-control" name="account_number" value="{{ form.account_number.value }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="ifsc_code" class="form-label">IFSC Code:</label>
+                <input type="text" class="form-control" name="ifsc_code" value="{{ form.ifsc_code.value }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="qr_code" class="form-label">Upload New QR Code:</label>
+                <input type="file" class="form-control" name="qr_code" accept="image/*">
+                {% if sahyog.qr_code %}
+                    <p>Current QR Code:</p>
+                    <img src="{{ sahyog.qr_code.url }}" alt="QR Code" width="100">
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">Update Sahyog</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'sahyog_list' %}" class="btn btn-secondary">Back to Sahyog List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

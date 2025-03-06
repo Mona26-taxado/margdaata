@@ -1,0 +1,97 @@
+{% extends 'donation/base.html' %}
+{% block content %}
+<!-- Breadcrumb Navigation -->
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .breadcrumb {
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+    }
+    .form-container {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 700px;
+        margin: auto;
+    }
+    .btn-submit {
+        width: 100%;
+        font-size: 18px;
+    }
+    .mt-4 {
+    margin-bottom: 24px;
+}
+</style>
+
+
+<div class="container mt-4">
+<!-- Breadcrumb Navigation -->
+<div class="page-header">
+    <h3 class="fw-bold mb-3">Running Sahyog Form</h3>
+    <ul class="breadcrumbs mb-3">
+        <li class="nav-home">
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="icon-home"></i>
+            </a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="#">Members</a>
+        </li>
+        <li class="separator">
+            <i class="icon-arrow-right"></i>
+        </li>
+        <li class="nav-item">
+            <a href="#">Running Sahyog Form</a>
+        </li>
+    </ul>
+</div>
+
+<h2 class="text-center">Running Sahyog Form</h2>
+
+<div class="form-container">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Sahyog Title:</label>
+            <input type="text" class="form-control" name="title" placeholder="Enter Sahyog Title" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="account_holder_name" class="form-label">Account Holder Name:</label>
+            <input type="text" class="form-control" name="account_holder_name" placeholder="Enter Account Holder Name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="bank_name" class="form-label">Bank Name:</label>
+            <input type="text" class="form-control" name="bank_name" placeholder="Enter Bank Name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="account_number" class="form-label">Account Number:</label>
+            <input type="text" class="form-control" name="account_number" placeholder="Enter Account Number" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="ifsc_code" class="form-label">IFSC Code:</label>
+            <input type="text" class="form-control" name="ifsc_code" placeholder="Enter IFSC Code" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="qr_code" class="form-label">Upload QR Code:</label>
+            <input type="file" class="form-control" name="qr_code" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit">Submit</button>
+    </form>
+</div>
+</div>
+{% endblock %}

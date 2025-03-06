@@ -1,0 +1,169 @@
+{% extends 'donation/base_user.html' %}
+{% block content %}
+<!-- Custom CSS -->
+
+<style>
+
+.main-panel .row {
+    --bs-gutter-x: 12px;
+}
+.profile-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.card-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background: #007bff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+</style>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3><i class="fa fa-user-circle"></i> User Profile</h3>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- ✅ Success Message -->
+                    {% if messages %}
+                        <div class="alert alert-success">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- ✅ Profile Form -->
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name:</label>
+                                <input type="text" name="name" class="form-control" value="{{ customer.name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Mobile:</label>
+                                <input type="text" name="mobile" class="form-control" value="{{ customer.mobile }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Email:</label>
+                                <input type="email" name="email" class="form-control" value="{{ customer.email }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth:</label>
+                                <input type="date" name="dob" class="form-control" value="{{ customer.dob|date:'Y-m-d' }}">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">PAN Number:</label>
+                                <input type="text" name="pan" class="form-control" value="{{ customer.pan }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Home Address:</label>
+                                <textarea name="home_address" class="form-control">{{ customer.home_address }}</textarea>
+                            </div>
+                        </div>
+
+                        <h4 class="mt-4"><i class="fa fa-building"></i> Work Details</h4>
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Department:</label>
+                                <input type="text" name="department" class="form-control" value="{{ customer.department }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Post:</label>
+                                <input type="text" name="post" class="form-control" value="{{ customer.post }}">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Posting District:</label>
+                                <input type="text" name="posting_district" class="form-control" value="{{ customer.posting_district }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Posting Block:</label>
+                                <input type="text" name="posting_block" class="form-control" value="{{ customer.posting_block }}">
+                            </div>
+                        </div>
+
+                        <h4 class="mt-4"><i class="fa fa-heartbeat"></i> Medical Information</h4>
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Disease:</label>
+                                <input type="text" name="disease" class="form-control" value="{{ customer.disease }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Cause of Illness:</label>
+                                <textarea name="cause_of_illness" class="form-control">{{ customer.cause_of_illness }}</textarea>
+                            </div>
+                        </div>
+
+                        <h4 class="mt-4"><i class="fa fa-user-friends"></i> Nominee Details</h4>
+<hr>
+
+<div class="row">
+    <div class="col-md-6">
+        <label class="form-label">First Nominee Name:</label>
+        <input type="text" name="first_nominee_name" class="form-control" value="{{ customer.first_nominee_name|default_if_none:'' }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">First Nominee Relation:</label>
+        <input type="text" name="first_nominee_relation" class="form-control" value="{{ customer.first_nominee_relation|default_if_none:'' }}">
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <label class="form-label">First Nominee Mobile:</label>
+        <input type="text" name="first_nominee_mobile" class="form-control" value="{{ customer.first_nominee_mobile|default_if_none:'' }}">
+    </div>
+</div>
+
+
+                        <!-- ✅ Update Profile Button -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> Update Profile
+                            </button>
+                        </div>
+                        
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+{% endblock %}

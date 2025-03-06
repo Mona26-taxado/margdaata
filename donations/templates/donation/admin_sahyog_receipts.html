@@ -1,0 +1,33 @@
+{% extends 'donation/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">All Users' Sahyog Receipts</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Mobile</th>
+                <th>Email</th>
+                <th>Sahyog Title</th>
+                <th>Receipt</th>
+                <th>Date Uploaded</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receipt in receipts %}
+            <tr>
+                <td>{{ receipt.user.username }}</td>
+                <td>{{ receipt.user.profile.mobile }}</td>
+                <td>{{ receipt.user.email }}</td>
+                <td>{{ receipt.sahyog.title }}</td>
+                <td><a href="{{ receipt.receipt.url }}" target="_blank">View Receipt</a></td>
+                <td>{{ receipt.date_uploaded }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">No receipts uploaded yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

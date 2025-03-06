@@ -1,0 +1,128 @@
+{% extends base_template %}
+
+
+{% block content %}
+
+<!-- ✅ Page Container -->
+<div class="container mt-4">
+    <!-- ✅ Breadcrumb Navigation -->
+    <div class="page-header">
+        <h3 class="fw-bold mb-3">Running Sahyog List</h3>
+        <ul class="breadcrumbs mb-3">
+            <li class="nav-home">
+                <a href="{% url 'admin_dashboard' %}">
+                    <i class="fa fa-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Sahyog</a>
+            </li>
+            <li class="separator">
+                <i class="fa fa-angle-right"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">Running Sahyog List</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- ✅ Page Heading -->
+    <h2 class="text-center mb-4"><i class="fa fa-hand-holding-heart"></i> Running Sahyog List</h2>
+
+    <!-- ✅ Sahyog Cards Grid -->
+    <div class="row">
+        {% for sahyog in sahyog_list %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card sahyog-card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ sahyog.title }}</h5>
+                    <hr>
+                    <p class="sahyog-details">
+                        <strong>Account Holder:</strong> {{ sahyog.account_holder_name }}<br>
+                        <strong>Bank:</strong> {{ sahyog.bank_name }}<br>
+                        <strong>Account No:</strong> {{ sahyog.account_number }}<br>
+                        <strong>IFSC Code:</strong> {{ sahyog.ifsc_code }}
+                    </p>
+
+                    <!-- ✅ QR Code -->
+                    <div class="text-center">
+                        {% if sahyog.qr_code %}
+                            <img src="{{ sahyog.qr_code.url }}" alt="QR Code" class="qr-image">
+                        {% else %}
+                            <p class="text-muted">No QR Code Available</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- ✅ Role-Based Actions -->
+                    {% if request.user.is_staff %}
+                        <div class="d-flex justify-content-between mt-3">
+                            <a href="{% url 'edit_sahyog' sahyog.id %}" class="btn btn-warning btn-sm">
+                                <i class="fa fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'delete_sahyog' sahyog.id %}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this Sahyog?');">
+                                <i class="fa fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-success fw-bold mt-2">For Assistance, Contact Admin</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">No Sahyog entries available.</p>
+        {% endfor %}
+    </div>
+
+    <!--  -->
+</div>
+
+<!-- ✅ Custom Styling -->
+<style>
+    .sahyog-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        transition: 0.3s ease-in-out;
+        border-left: 5px solid #007bff;
+    }
+
+    .sahyog-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    }
+
+    .sahyog-details {
+        font-size: 15px;
+        color: #444;
+    }
+
+    .qr-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+    .btn-warning {
+        background: #ff9800;
+        color: white;
+        border-radius: 5px;
+    }
+
+    .btn-danger {
+        background: #e63946;
+        color: white;
+        border-radius: 5px;
+    }
+    .main-panel .row {
+    --bs-gutter-x: 21px;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends 'donation/base.html' %}
+{% block content %}
+<!-- Custom CSS -->
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .container {
+        margin-top: 30px;
+    }
+    .table th {
+        background-color: #343a40;
+        color: white;
+    }
+    .btn-approve {
+        background-color: #28a745;
+        color: white;
+    }
+    .btn-reject {
+        background-color: #dc3545;
+        color: white;
+    }
+    .btn-approve:hover {
+        background-color: #218838;
+    }
+    .btn-reject:hover {
+        background-color: #c82333;
+    }
+</style>
+
+
+<div class="container">
+<h2 class="text-center mb-4">Manage Members</h2>
+
+<!-- Search Bar -->
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search by name or email...">
+</div>
+<div class="card">
+    <div class="card-header bg-warning text-dark">
+        Pending Requests
+    </div>
+    <div class="card-body">
+    <table class="table table-hover" id="pendingTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Mobile</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in pending_requests %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.mobile }}</td>
+                <td>
+                    <form method="post" action="{% url 'approve_user' user.user.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm">✅ Approve</button>
+                    </form>
+
+                    <form method="post" action="{% url 'reject_user' user.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">❌ Reject</button>
+                    </form>                    
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">No pending requests.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</div>
+<!-- Approved Users Table -->
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        Approved Users
+    </div>
+    <div class="card-body">
+        <table class="table table-hover" id="approvedTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in approved_users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.mobile }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No approved users yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pending Requests Table -->
+</div>
+
+<!-- JavaScript for Search Functionality -->
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let filter = this.value.toLowerCase();
+    let rowsApproved = document.querySelectorAll("#approvedTable tbody tr");
+    let rowsPending = document.querySelectorAll("#pendingTable tbody tr");
+
+    rowsApproved.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+
+    rowsPending.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+});
+</script>
+
+    
+
+{% endblock %}

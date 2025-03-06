@@ -1,0 +1,53 @@
+{% extends "donation/base_user.html" %}
+{% block content %}
+
+<style>
+    .container.mt-7 {
+    margin-top: 6rem;
+}
+</style>
+<div class="container mt-7">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center text-primary">My Vyawastha Shulk Receipts</h2>
+        <hr>
+
+        {% if receipts %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Receipt</th>
+                        <th>Amount</th>
+                        <th>Transaction ID</th>
+                        <th>Uploaded At</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receipt in receipts %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <img src="{{ receipt.receipt_image.url }}" alt="Receipt" class="img-thumbnail" width="100">
+                        </td>
+                        <td>{{ receipt.amount }} INR</td>
+                        <td>{{ receipt.transaction_id }}</td>
+                        <td>{{ receipt.uploaded_at|date:"d M Y, h:i A" }}</td>
+                        <td>
+                            <a href="{{ receipt.receipt_image.url }}" download class="btn btn-success btn-sm">
+                                <i class="fa fa-download"></i> Download
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No receipts uploaded yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

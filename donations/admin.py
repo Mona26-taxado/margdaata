@@ -27,19 +27,20 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 # Register your models here.
 
+from django.contrib import admin
+from django.contrib.auth import get_user_model
 from .models import Notification
+
+User = get_user_model()  # Get custom user model
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('message', 'created_at', 'is_active')
-    list_filter = ('is_active', 'created_at')
-    search_fields = ('message',)
-    actions = ['make_active', 'make_inactive']
+    list_display = ("title", "message", "target_type", "specific_user", "created_at")  # Removed `is_active`
+    list_filter = ("target_type", "created_at")  # Filtering by valid fields
+    search_fields = ("title", "message", "specific_user__email")  # Searching by user email if specific
 
-    def make_active(self, request, queryset):
-        queryset.update(is_active=True)
-    make_active.short_description = "Mark selected notifications as active"
+    def specific_user_email(self, obj):
+        return obj.specific_user.email if obj.specific_user else "All Users"
 
-    def make_inactive(self, request, queryset):
-        queryset.update(is_active=False)
-    make_inactive.short_description = "Mark selected notifications as inactive"
+    specific_user_email.short_description = "Specific User Email"
+

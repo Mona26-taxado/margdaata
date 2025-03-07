@@ -95,7 +95,7 @@ class Migration(migrations.Migration):
                 ('dob', models.DateField()),
                 ('mobile', models.CharField(max_length=15, unique=True)),
                 ('mobile_home', models.CharField(blank=True, max_length=15, null=True)),
-                ('pan', models.CharField(max_length=10, unique=True)),
+                ('aadhar', models.CharField(max_length=10, unique=True)),
                 ('nominee_name', models.CharField(max_length=100)),
                 ('nominee_relation', models.CharField(max_length=50)),
                 ('nominee_mobile', models.CharField(max_length=15)),

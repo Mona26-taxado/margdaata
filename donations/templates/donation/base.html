@@ -115,22 +115,28 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a  href="{% url 'view_members' %}">
+                  <i class="fas fa-users"></i> <!-- Represents a team -->
+                  <p>Members List</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a  href="{% url 'running_sahyog' %}">
                   <i class="fas fa-download"></i> <!-- Represents a team -->
 
-                  <p>Running Sahyot List</p>
+                  <p>Running Sahyog</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="{% url 'sahyog_list' %}">
                   <i class="fas fa-globe"></i>
-                  <p>Manage Sahyog</p>
+                  <p>View Sahyog</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a  href="{% url 'admin_receipts' %}">
                   <i class="fas fa-sticky-note"></i>
-                  <p>Sahyog Receipt</p>
+                  <p>Sahyog List</p>
                 </a>
               </li>
               <li class="nav-item">

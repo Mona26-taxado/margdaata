@@ -1,54 +1,153 @@
-{% extends 'donation/base.html' %}
+{% extends "donation/base.html" %}
 {% block content %}
-<style>
-    .mt-4 {
-    margin-top: 6.5rem !important;
-    margin-bottom: 17px;
-}
-</style>
-<div class="container mt-4">
-    <div class="page-header">
-        <h3 class="fw-bold mb-3">Edit Member</h3>
-        <ul class="breadcrumbs mb-3">
-            <li class="nav-home">
-                <a href="{% url 'admin_dashboard' %}">
-                    <i class="icon-home"></i>
-                </a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Members</a>
-            </li>
-            <li class="separator">
-                <i class="icon-arrow-right"></i>
-            </li>
-            <li class="nav-item">
-                <a href="#">Edit Member</a>
-            </li>
-        </ul>
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center text-primary"><i class="fa fa-user-edit"></i> Edit Member Details</h2>
+        <hr>
+
+        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-user"></i> Full Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-envelope"></i> Email</label>
+                    {{ form.email }}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-phone"></i> Mobile</label>
+                    {{ form.mobile }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-phone-alt"></i> Home Mobile</label>
+                    {{ form.mobile_home }}
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-calendar"></i> Date of Birth</label>
+                    {{ form.dob }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-venus-mars"></i> Gender</label>
+                    {{ form.gender }}
+                </div>
+            </div>
+
+            <!-- ✅ Nominee Details Section -->
+            <h4 class="mt-4 text-primary"><i class="fa fa-user-friends"></i> Nominee Details</h4>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fa fa-user"></i> Nominee Name</label>
+                    {{ form.first_nominee_name }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fa fa-users"></i> Nominee Relation</label>
+                    {{ form.first_nominee_relation }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fa fa-phone"></i> Nominee Mobile</label>
+                    {{ form.first_nominee_mobile }}
+                </div>
+            </div>
+
+            <h4 class="mt-4 text-primary"><i class="fa fa-briefcase"></i> Job Details</h4>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-building"></i> Department</label>
+                    {{ form.department }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-id-badge"></i> Post</label>
+                    {{ form.post }}
+                </div>
+            </div>
+
+            <h4 class="mt-4 text-primary"><i class="fa fa-map"></i> Location Details</h4>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fa fa-map-marker-alt"></i> Posting State</label>
+                    {{ form.posting_state }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label"><i class="fa fa-map"></i> Posting District</label>
+                    {{ form.posting_district }}
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label"><i class="fa fa-home"></i> Home Address</label>
+                {{ form.home_address }}
+            </div>
+
+            <h4 class="mt-4 text-danger"><i class="fa fa-exclamation-triangle"></i> Health Information</h4>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-procedures"></i> Disease</label>
+                    {{ form.disease }}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label"><i class="fa fa-notes-medical"></i> Cause of Illness</label>
+                    {{ form.cause_of_illness }}
+                </div>
+            </div>
+
+            <h4 class="mt-4 text-success"><i class="fa fa-file-invoice-dollar"></i> Payment Information</h4>
+            <div class="mt-3">
+                <label class="form-label"><i class="fa fa-file-upload"></i> Payment Slip</label>
+                {{ form.payment_slip }}
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label"><i class="fa fa-check-circle"></i> Approval Status</label>
+                {{ form.approved }}
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fa fa-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
     </div>
-    
-    <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Mobile</label>
-            <input type="text" name="mobile" class="form-control" value="{{ user.mobile }}" required>
-        </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" name="is_approved" class="form-check-input" {% if user.is_approved %}checked{% endif %}>
-            <label class="form-check-label">Approved</label>
-        </div>
-        <button type="submit" class="btn btn-success">Update</button>
-    </form>
 </div>
+
+<!-- ✅ Custom Styling -->
+<style>
+    .container {
+        max-width: 800px;
+    }
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+    .form-control {
+        border-radius: 8px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.2);
+    }
+    .btn-success {
+        background: linear-gradient(to right, #28a745, #218838);
+        color: white;
+        font-weight: bold;
+        padding: 12px;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+    .btn-success:hover {
+        background: linear-gradient(to right, #218838, #1e7e34);
+        transform: scale(1.05);
+    }
+</style>
 {% endblock %}

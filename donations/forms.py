@@ -24,8 +24,8 @@ class CustomerRegistrationForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = [
-            'name', 'email', 'gender', 'dob', 'mobile', 'mobile_home', 'pan',
-            'department', 'post', 'posting_district', 'posting_block',
+            'name', 'email', 'gender', 'dob', 'mobile', 'mobile_home', 'aadhar',
+            'department', 'post','posting_state', 'posting_district', 'posting_block',
             'home_address', 'home_district', 'disease', 'cause_of_illness',
             'payment_slip'
         ]
@@ -39,10 +39,40 @@ class CustomerRegistrationForm(forms.ModelForm):
             'posting_block': forms.TextInput(attrs={'class': 'form-control'}),
             'home_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'cause_of_illness': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'posting_state': forms.Select(attrs={'class': 'form-control', 'id': 'state'}),
+            'posting_district': forms.Select(attrs={'class': 'form-control', 'id': 'district'}),
+            'posting_block': forms.Select(attrs={'class': 'form-control', 'id': 'block'}),
         }
 
 
 
+
+class CustomerEditForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = [
+            "name", "email", "mobile", "mobile_home", "dob", "gender",
+            "aadhar", "first_nominee_name", "first_nominee_relation", "first_nominee_mobile",
+            "department", "post", "posting_state", "posting_district",
+            "posting_block", "home_address", "home_district", "disease",
+            "cause_of_illness", "payment_slip", "approved"
+        ]
+        widgets = {
+            "dob": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "gender": forms.Select(attrs={"class": "form-control"}),
+            "posting_state": forms.TextInput(attrs={"class": "form-control"}),
+            "posting_district": forms.TextInput(attrs={"class": "form-control"}),
+            "posting_block": forms.TextInput(attrs={"class": "form-control"}),
+            "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
+            "cause_of_illness": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
+            "payment_slip": forms.FileInput(attrs={"class": "form-control"}),
+            "approved": forms.Select(choices=[(True, "Approved"), (False, "Pending")], attrs={"class": "form-control"}),
+
+            # ✅ Add Nominee Details Styling
+            "first_nominee_name": forms.TextInput(attrs={"class": "form-control"}),
+            "first_nominee_relation": forms.TextInput(attrs={"class": "form-control"}),
+            "first_nominee_mobile": forms.TextInput(attrs={"class": "form-control"}),
+        }
 
 
 
@@ -93,16 +123,23 @@ class VyawasthaShulkReceiptForm(forms.ModelForm):
 
 
 
-class NotificationForm(forms.ModelForm):
-    recipient = forms.ModelChoiceField(
-        queryset=CustomUser.objects.filter(role="user"), 
-        required=False, 
-        empty_label="All Users"
-    )  # Allows admin to send to one user or all
 
+
+class NotificationForm(forms.ModelForm):
     class Meta:
         model = Notification
-        fields = ["recipient", "message"]
+        fields = ["title", "message", "target_type"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        target_type = cleaned_data.get("target_type")
+        specific_user = self.data.get("specific_user")
+
+        if target_type == "specific_user" and not specific_user:
+            raise forms.ValidationError("Please select a user for a specific notification.")
+        
+        return cleaned_data
+
 
 
 

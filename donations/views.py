@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.admin.views.decorators import staff_member_required
 
+
 from django.contrib.auth import get_user_model
 import os
 
@@ -110,12 +111,12 @@ def register_customer(request):
             mobile = request.POST.get("mobile")
             password = request.POST.get("password")
             dob = request.POST.get("dob")  
-            pan = request.POST.get("pan")  
+            aadhar = request.POST.get("aadhar")  
             payment_slip = request.FILES.get("payment_slip")  
 
             print("✅ Data Received: ", name, email, mobile, dob)  # Debugging
 
-            if not name or not email or not mobile or not password or not dob or not pan:
+            if not name or not email or not mobile or not password or not dob or not aadhar:
                 return JsonResponse({"success": False, "message": "All fields are required."})
             if not payment_slip:
                 return JsonResponse({"success": False, "message": "Payment slip is required."})
@@ -142,7 +143,7 @@ def register_customer(request):
                 email=email,
                 mobile=mobile,
                 dob=dob,
-                pan=pan,
+                aadhar=aadhar,
                 approved=False,  
                 payment_slip=payment_slip  
             )
@@ -158,7 +159,7 @@ def register_customer(request):
             Email: {email}
             Mobile: {mobile}
             Date of Birth: {dob}
-            PAN: {pan}
+            Aadhar: {aadhar}
 
             Please review their registration details and approve their account.
             """
@@ -366,33 +367,81 @@ def reject_user(request, user_id):
 
 
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Customer
+from .forms import CustomerRegistrationForm  # Use the existing form
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Customer
+from .forms import CustomerEditForm
+
+# View Members: Separate for Admin and Users
+from django.core.paginator import Paginator
+from django.shortcuts import render
+from .models import Customer  # Import your model
+
+def view_members(request):
+    search_query = request.GET.get('search', '')  # Get search query from request
+    approved_users = Customer.objects.filter(approved=True)  # Fetch only approved users
+
+    # If search query exists, filter by name, email, or mobile
+    if search_query:
+        approved_users = approved_users.filter(
+            name__icontains=search_query
+        ) | approved_users.filter(
+            email__icontains=search_query
+        ) | approved_users.filter(
+            mobile__icontains=search_query
+        )
+
+    # Pagination (10 users per page)
+    paginator = Paginator(approved_users, 10)  # Show 10 records per page
+    page_number = request.GET.get('page')
+    approved_users = paginator.get_page(page_number)
+
+    # Check if user is admin or normal user
+    if request.user.is_staff:  
+        return render(request, "donation/view_members.html", {"approved_users": approved_users, "search_query": search_query})
+    else:  
+        return render(request, "donation/user_view_members.html", {"approved_users": approved_users, "search_query": search_query})
 
 
-@login_required
-@user_passes_test(lambda u: u.is_staff)
+# Edit Member Details (Only for Admin)
 def edit_member(request, user_id):
-    customer = get_object_or_404(Customer, id=user_id)
+    if not request.user.is_staff:  # Prevent users from editing
+        messages.error(request, "Unauthorized Access!")
+        return redirect("view_members")
 
+    member = get_object_or_404(Customer, id=user_id)
     if request.method == "POST":
-        customer.name = request.POST.get("name")
-        customer.email = request.POST.get("email")
-        customer.mobile = request.POST.get("mobile")
-        customer.department = request.POST.get("department")
-        customer.save()
-        messages.success(request, "Member details updated successfully.")
-        return redirect('manage_members')
+        form = CustomerEditForm(request.POST, request.FILES, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"{member.name}'s details have been updated!")
+            return redirect("view_members")
+    else:
+        form = CustomerEditForm(instance=member)
 
-    return render(request, "donation/edit_member.html", {"customer": customer})
+    return render(request, "donation/edit_member.html", {"form": form, "member": member})
 
-
-
-
-@login_required
-@user_passes_test(lambda u: u.is_staff)
+# Delete Member (Only for Admin)
 def delete_member(request, user_id):
-    customer = get_object_or_404(Customer, id=user_id)
-    customer.delete()
-    return JsonResponse({"message": "Member deleted successfully."})
+    if not request.user.is_staff:  # Prevent users from deleting
+        messages.error(request, "Unauthorized Access!")
+        return redirect("view_members")
+
+    member = get_object_or_404(Customer, id=user_id)
+    member.delete()
+    messages.error(request, f"{member.name} has been removed!")
+    return redirect("view_members")
+
+
+
+def user_view_members(request):
+    approved_users = Customer.objects.filter(approved=True)
+    return render(request, "donation/user_view_members.html", {"approved_users": approved_users})
 
 
 
@@ -487,32 +536,33 @@ def sahyog_list(request):
 def is_custom_admin(user):
     return user.is_staff  # Modify if you have a separate admin role
 
-# ✅ View to send notifications (only for Custom Admin)
-@staff_member_required
+
+
+
+
 def send_notification(request):
+    users = User.objects.all()  # Get all users to show in dropdown
     if request.method == "POST":
         form = NotificationForm(request.POST)
         if form.is_valid():
-            notification = form.save(commit=False)
-            recipient = form.cleaned_data["recipient"]
+            target_type = form.cleaned_data["target_type"]
+            specific_user = request.POST.get("specific_user")
 
-            if recipient:
-                notification.sender = request.user
-                notification.save()
+            if target_type == "specific_user" and not specific_user:
+                messages.error(request, "Please select a user.")
             else:
-                # Send to all users
-                users = CustomUser.objects.filter(role="user")
-                for user in users:
-                    Notification.objects.create(
-                        sender=request.user,
-                        message=notification.message
-                    )
+                form.save()
+                messages.success(request, "Notification sent successfully!")
+                return redirect("send_notification")
 
-            return redirect("send_notification")  # Redirect after sending
     else:
         form = NotificationForm()
 
-    return render(request, "donation/send_notification.html", {"form": form})
+    return render(request, "donation/send_notification.html", {"form": form, "users": users})
+
+
+
+
 
 # ✅ View to display notifications for admin
 @login_required
@@ -572,7 +622,7 @@ def user_profile(request):
         customer.mobile = request.POST.get("mobile", customer.mobile)
         customer.email = request.POST.get("email", customer.email)
         customer.dob = request.POST.get("dob", customer.dob)
-        customer.pan = request.POST.get("pan", customer.pan)
+        customer.aadhar = request.POST.get("aadhar", customer.aadhar)
         customer.home_address = request.POST.get("home_address", customer.home_address)
         customer.department = request.POST.get("department", customer.department)
         customer.post = request.POST.get("post", customer.post)
@@ -663,7 +713,7 @@ def admin_vyawastha_shulk_receipts(request):
 
 
 def user_dashboard(request):
-    notifications = Notification.objects.filter(is_active=True).order_by("-created_at")
+    notifications = Notification.objects.all()  # ✅ Fetch all notifications
     return render(request, "donation/user_dashboard.html", {"notifications": notifications})
 
 
@@ -711,3 +761,9 @@ def update_blood_donation_status(request, donation_id, status):
         donation.status = status
         donation.save()
     return redirect("blood_donation_list")
+
+
+
+
+
+

@@ -1,12 +1,13 @@
 from django.urls import path
 from django.conf import settings
 from django.shortcuts import render
-from .views import register_customer, manage_members, edit_member, user_logout, delete_member, add_member, submit_blood_donation, blood_donation_list, update_blood_donation_status
+from .views import register_customer, manage_members, edit_member, user_view_members,user_logout, delete_member, add_member, submit_blood_donation, blood_donation_list, update_blood_donation_status, view_members
 from .views import approve_user, login_view,  admin_dashboard, user_dashboard, reject_user
-from .views import generate_payment_receipt, running_sahyog, sahyog_list, edit_sahyog, delete_sahyog,   send_notification, manage_notifications, delete_notification
+from .views import generate_payment_receipt, running_sahyog, sahyog_list, edit_sahyog, delete_sahyog, send_notification, manage_notifications, delete_notification
 from django.conf.urls.static import static
 from .views import user_profile, upload_receipt, user_receipts, admin_receipts, upload_vyawastha_shulk, user_vyawastha_shulk_receipts, admin_vyawastha_shulk_receipts
 from django.urls import path
+
 
 
 
@@ -22,8 +23,10 @@ urlpatterns = [
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path("user-dashboard/", user_dashboard, name="user_dashboard"),  # ✅ Ensure this exists
     path('manage-members/', manage_members, name='manage_members'),
-    path('edit-member/<int:user_id>/', edit_member, name='edit_member'),
-    path('delete-member/<int:user_id>/', delete_member, name='delete_member'),
+    path("view-members/", view_members, name="view_members"),
+    path("user-view-members/", user_view_members, name="user_view_members"),  # Normal Users Only
+    path("edit-member/<int:user_id>/", edit_member, name="edit_member"),
+    path("delete-member/<int:user_id>/", delete_member, name="delete_member"),
     path('add-member/', add_member, name='add_member'),
     path('running-sahyog/', running_sahyog, name='running_sahyog'),  # ✅ Admin Adds Sahyog
     path('sahyog-list/', sahyog_list, name='sahyog_list'),  # ✅ Users View Sahyog
@@ -51,7 +54,6 @@ urlpatterns = [
     path("donate/", submit_blood_donation, name="submit_blood_donation"),
     path("donations/", blood_donation_list, name="blood_donation_list"),
     path("update_donation/<int:donation_id>/<str:status>/", update_blood_donation_status, name="update_blood_donation_status"),
-
 
 
 

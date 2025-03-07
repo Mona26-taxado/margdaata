@@ -25,8 +25,12 @@ SECRET_KEY = 'django-insecure-b!htcm#y^!igc!_7+y*qpeg&dwqmp0rrrg#y6c5l%@-c@-9a*m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdaata.in"]
+CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdaata.in"]
+CSRF_COOKIE_SECURE = True
 
+
+# ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -88,6 +92,9 @@ DATABASES = {
         'PASSWORD': 'M@rgdaata163',  # Your MySQL root password
         'HOST': '147.93.18.188',
         'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',  # ✅ Ensure full UTF-8 support
+        },
     }
 }
 
@@ -145,7 +152,7 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # ✅ Add this line
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'

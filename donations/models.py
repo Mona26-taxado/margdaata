@@ -52,16 +52,17 @@ class Customer(models.Model):
     dob = models.DateField(null=True)
     mobile = models.CharField(max_length=15, unique=True)
     mobile_home = models.CharField(max_length=15, blank=True, null=True)
-    pan = models.CharField(max_length=10, unique=True, blank=False, null=False)
+    aadhar = models.CharField(max_length=12, unique=True, blank=False, null=False)
 
     # ✅ Nominee Details
-    nominee_name = models.CharField(max_length=100)
-    nominee_relation = models.CharField(max_length=50)
-    nominee_mobile = models.CharField(max_length=15)
+    first_nominee_name = models.CharField(max_length=255, null=True, blank=True)  # ✅ Exists
+    first_nominee_relation = models.CharField(max_length=100, null=True, blank=True)  # ✅ Must exist
+    first_nominee_mobile = models.CharField(max_length=15, null=True, blank=True)
 
     # ✅ Other Details
     department = models.CharField(max_length=100, default="General")
     post = models.CharField(max_length=100, default="Not Assigned")
+    posting_state = models.CharField(max_length=100, default="Not Assigned")
     posting_district = models.CharField(max_length=100, default="Not Assigned")
     posting_block = models.CharField(max_length=100, default="Not Assigned")
     home_address = models.TextField()
@@ -93,6 +94,11 @@ class Customer(models.Model):
         return f"{self.name} ({self.md_code})"
 
 
+
+
+
+
+
 # ✅ Sahyog Model
 class Sahyog(models.Model):
     title = models.CharField(max_length=200)
@@ -119,14 +125,26 @@ class SahyogReceipt(models.Model):
 
 
 # ✅ Notification Model
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # Get the custom User model dynamically
+
 class Notification(models.Model):
-    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="notifications_sent", null=True, blank=True)
-    message = models.TextField()
-    created_at = models.DateTimeField(default=now)
-    is_active = models.BooleanField(default=True)
+    TARGET_CHOICES = [
+        ("all_users", "All Users"),
+        ("specific_user", "Specific User"),
+    ]
+
+    title = models.CharField(max_length=255, null=True, blank=True)
+    message = models.TextField()  # No need to specify charset in Django, just ensure DB supports utf8mb4
+    target_type = models.CharField(max_length=20, choices=TARGET_CHOICES, default="all_users")
+    specific_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.message[:50]
+        return f"{self.title} - {self.get_target_type_display()}"
+
 
 
 # ✅ VyawasthaShulkReceipt Model

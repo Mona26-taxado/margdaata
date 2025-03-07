@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +7,10 @@
     <title>Customer Registration</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link
+      rel="icon"
+      href="{% static 'assets/img/margdata - copy.png' %}"
+      type="image/x-icon"/>
     
     <style>
         body {
@@ -92,7 +97,7 @@
                 <div class="invalid-feedback">Please enter your full name.</div>
             </div>
             <div class="col-md-6">
-                <label class="form-label"><i class="fa fa-envelope"></i> Email *</label>
+                <label class="form-label"><i class="fa fa-envelope"></i> Email * (for login)</label>
                 <input type="email" name="email" class="form-control" required>
                 <div class="invalid-feedback">Please enter your full Email.</div>
             </div>
@@ -117,9 +122,9 @@
     <input type="date" class="form-control" name="dob" required>
             </div>
             <div class="col-md-6">
-                <label for="pan" class="form-label"><i class="fa fa-id-card"></i> PAN *</label>
-                <input type="text" name="pan" id="pan" class="form-control" placeholder="Enter PAN" required>
-                <div class="invalid-feedback">Please enter your Home PAN</div>
+                <label for="Aadhaar" class="form-label"><i class="fa fa-id-card"></i> Aaddhar Number *</label>
+                <input type="text" name="aadhar" id="Aadhaar" class="form-control" placeholder="Enter Aadhaar" required>
+                <div class="invalid-feedback">Please enter your Home Aadhaar</div>
             </div>
         </div>
 
@@ -194,30 +199,66 @@
             </div>
         </div>
         <div class="row mt-3">
-            <div class="col-md-6">
-                <label class="form-label"><i class="fa fa-map"></i> Posting District *</label>
-                <select id="district" name="posting_district" class="form-control" required>
-                    <option value="" selected disabled>Select District</option>
-                    <option value="Lucknow">Lucknow</option>
-                    <option value="Kanpur">Kanpur</option>
-                    <option value="Varanasi">Varanasi</option>
-                    <option value="Gorakhpur">Gorakhpur</option>
-                    <option value="Prayagraj">Prayagraj</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label"><i class="fa fa-map-pin"></i> Posting Block *</label>
-                <select id="block" name="posting_block" class="form-control" required>
-                    <option value="" selected disabled>Select Block</option>
-                </select>
-            </div>
-        </div>
-        
+            <!-- State Dropdown -->
+<div class="col-md-6">
+    <label class="form-label"><i class="fa fa-map"></i> Posting State *</label>
+    <select id="state" name="posting_state" class="form-control" required>
+        <option value="" selected disabled>Select District</option>
+                    <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Chandigarh">Chandigarh</option>
+                    <option value="Chhattisgarh">Chhattisgarh</option>
+                    <option value="Dadra and Nagar Haveli">Dadra and Nagar Haveli</option>
+                    <option value="Daman and Diu">Daman and Diu</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                    <option value="Jharkhand">Jharkhand</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Ladakh">Ladakh</option>
+                    <option value="Lakshadweep">Lakshadweep</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Manipur">Manipur</option>
+                    <option value="Meghalaya">Meghalaya</option>
+                    <option value="Mizoram">Mizoram</option>
+                    <option value="Nagaland">Nagaland</option>
+                    <option value="Odisha">Odisha</option>
+                    <option value="Puducherry">Puducherry</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Sikkim">Sikkim</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="Telangana">Telangana</option>
+                    <option value="Tripura">Tripura</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="West Bengal">West Bengal</option>
+    </select>
+</div>
 
+<!-- District Dropdown -->
+<div class="col-md-6">
+    <label class="form-label"><i class="fa fa-map-pin"></i> Posting District *</label>
+    <select id="district" name="posting_district" class="form-control" required>
+        <option value="" selected disabled>Select District</option>
+    </select>
+</div>
+
+  </div>      
         <div class="mt-3">
-            <label class="form-label"><i class="fa fa-upload"></i> Upload Payment Slip *</label>
+            <div class="col-md-12">
+                <label class="form-label"><i class="fa fa-upload"></i> Upload Payment Slip *</label>
             <input type="file" name="payment_slip" class="form-control required">
             <div class="invalid-feedback">Please upload your payment slip.</div>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-custom w-100 mt-3"><i class="fa fa-paper-plane"></i> Register</button>
@@ -226,32 +267,47 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const districtToBlocks = {
-        "Lucknow": ["Aliganj", "Chowk", "Gomti Nagar", "Indira Nagar", "Rajajipuram"],
-        "Kanpur": ["Govind Nagar", "Kakadev", "Swaroop Nagar", "Panki", "Shastri Nagar"],
-        "Varanasi": ["Shivpur", "Sigra", "Lahurabir", "Durgakund", "Bhelupur"],
-        "Gorakhpur": ["Basharatpur", "Taramandal", "Shahpur", "Golghar", "Rajendra Nagar"],
-        "Prayagraj": ["Civil Lines", "George Town", "Kareli", "Naini", "Bamrauli"]
+    // Mapping of States to Districts
+    const stateToDistricts = {
+        "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", "Badaun", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Ghazipur", "Ghaziabad", "Gorakhpur", "Hamirpur", "Hapur", "Hathras", "Jhansi", "Jalaun", "Jansik", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Prayagraj", "Rampur", "Saharanpur", "Sambhal", "Saranpur", "Sant Kabir Nagar", "Shahjahanpur", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi" ],
+
+        "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Ujjain", "Jabalpur", "Sagar", "Dewas", "Ratlam", "Rewa", "Satna"],
+        "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Purnia", "Darbhanga", "Begusarai", "Arrah", "Katihar", "Munger"],
+        "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Ajmer", "Bikaner", "Kota", "Alwar", "Bharatpur", "Sikar", "Pali"],
+        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad", "Solapur", "Amravati", "Nanded", "Kolhapur"],
+        "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar", "Bhavnagar", "Jamnagar", "Junagadh", "Anand", "Navsari"],
+        "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "South Delhi", "West Delhi", "North Delhi", "North East Delhi", "North West Delhi", "South West Delhi", "South East Delhi"],
+        "Haryana": ["Ambala", "Bhiwani", "Faridabad", "Fatehabad", "Gurgaon", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal"],
+        "Punjab": ["Amritsar", "Bathinda", "Faridkot", "Firozpur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa"],
+        "Uttarakhand": ["Dehradun", "Haridwar", "Nainital", "Almora", "Bageshwar", "Chamoli", "Champawat", "Pauri Garhwal", "Pithoragarh", "Rudraprayag"],
+        "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Bolangir"],
+        "Kerala": ["Thiruvananthapuram", "Kollam", "Kochi", "Kozhikode", "Thrissur", "Kannur", "Alappuzha", "Kottayam", "Palakkad", "Manjeri"],
+        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Tiruppur", "Salem", "Erode", "Tirunelveli", "Vellore", "Thoothukudi"],
+        "Telangana": ["Hyderabad", "Warangal", "Khammam", "Nizamabad", "Karimnagar", "Ramagundam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
+        "Sikkim": ["Gangtok", "Mangan", "Gyalshing", "Singtam", "Namchi", "Ravangla", "Rangpo", "Jorethang", "Naya Bazar", "Rhenock"],
+        "West Bengal": ["Kolkata", "Siliguri", "Asansol", "Durgapur", "Bardhaman", "Malda", "Baharampur", "Habra", "Kharagpur", "Shant Rukmini Nagar"],
+
     };
 
-    document.getElementById("district").addEventListener("change", function() {
-        const selectedDistrict = this.value;
-        const blockDropdown = document.getElementById("block");
-        
-        // Clear previous options
-        blockDropdown.innerHTML = '<option value="" selected disabled>Select Block</option>';
+    document.getElementById("state").addEventListener("change", function () {
+        let selectedState = this.value;
+        let districtDropdown = document.getElementById("district");
 
-        // Populate new options based on selected district
-        if (selectedDistrict in districtToBlocks) {
-            districtToBlocks[selectedDistrict].forEach(block => {
+        // Clear previous options
+        districtDropdown.innerHTML = '<option value="" selected disabled>Select District</option>';
+
+        // Add new districts based on the selected state
+        if (selectedState in stateToDistricts) {
+            stateToDistricts[selectedState].forEach(district => {
                 let option = document.createElement("option");
-                option.value = block;
-                option.textContent = block;
-                blockDropdown.appendChild(option);
+                option.value = district;
+                option.textContent = district;
+                districtDropdown.appendChild(option);
             });
         }
     });
 </script>
+
 <script>
     document.getElementById("diseaseSelect").addEventListener("change", function() {
         let causeContainer = document.getElementById("causeContainer");
@@ -268,31 +324,25 @@
     });
 </script>
 <script>
-    document.getElementById("registrationForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevents default submission
+  document.querySelector("form").addEventListener("submit", function (e) {
+    let requiredFields = document.querySelectorAll("[required]");
+    let isValid = true;
 
-    let formData = new FormData(this);
-
-    fetch(this.action, {  // ✅ Ensure the form action URL is correct
-        method: "POST",
-        body: formData,
-        headers: {
-            "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Registration successful! Redirecting...");
-
-            // ✅ Redirect after success
-            window.location.href = "{% url 'registration_success' %}";
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            field.style.border = "2px solid red";  // Highlight missing fields
         } else {
-            alert("Error: " + data.message);
+            field.style.border = "";
         }
-    })
-    .catch(error => console.error("Error:", error));
+    });
+
+    if (!isValid) {
+        e.preventDefault();
+        alert("Error: All fields are required.");
+    }
 });
+
 
   </script>
   

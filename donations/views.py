@@ -23,6 +23,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.admin.views.decorators import staff_member_required
+import fitz  # PyMuPDF
+from django.http import FileResponse, HttpResponse
+from io import BytesIO
 
 
 from django.contrib.auth import get_user_model
@@ -100,6 +103,7 @@ def login_view(request):
 
 
 
+from django.contrib import messages  # ✅ Import messages for Bootstrap alerts
 
 def register_customer(request):
     if request.method == "POST":
@@ -114,18 +118,24 @@ def register_customer(request):
             aadhar = request.POST.get("aadhar")  
             payment_slip = request.FILES.get("payment_slip")  
 
-            print("✅ Data Received: ", name, email, mobile, dob)  # Debugging
-
             if not name or not email or not mobile or not password or not dob or not aadhar:
-                return JsonResponse({"success": False, "message": "All fields are required."})
+                messages.error(request, "All fields are required.")
+                return redirect("register_customer")  # ✅ Redirect to same page
+
             if not payment_slip:
-                return JsonResponse({"success": False, "message": "Payment slip is required."})
+                messages.error(request, "Payment slip is required.")
+                return redirect("register_customer")
 
             dob = datetime.strptime(dob, "%Y-%m-%d").date()
 
-            # ✅ Check if email is already registered
+            # ✅ Check if email or Aadhar already exists
             if CustomUser.objects.filter(email=email).exists():
-                return JsonResponse({"success": False, "message": "Email already registered."})
+                messages.error(request, "Email already registered.")
+                return redirect("register_customer")
+
+            if Customer.objects.filter(aadhar=aadhar).exists():
+                messages.error(request, "Aadhar number already registered.")
+                return redirect("register_customer")
 
             # ✅ Create a user in CustomUser model
             user = CustomUser.objects.create(
@@ -150,7 +160,7 @@ def register_customer(request):
 
             print("✅ Customer Saved Successfully!")  
 
-            # ✅ Notify Admin for Approval
+            # ✅ Send Admin Notification
             subject = "New User Registration - Pending Approval"
             message = f"""
             A new user has registered on your platform.
@@ -163,20 +173,16 @@ def register_customer(request):
 
             Please review their registration details and approve their account.
             """
-            admin_email = settings.DEFAULT_FROM_EMAIL  # Use the default admin email
+            admin_email = settings.DEFAULT_FROM_EMAIL  
             send_mail(subject, message, admin_email, [admin_email])
 
-            # ✅ Return JSON response for AJAX request
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({"success": True, "message": "Registration successful. Await admin approval."})
-            
-            # ✅ If accessed normally, redirect to login page
-            else:
-              return redirect("registration_success")  # ✅ Redirect non-AJAX requests
+            # ✅ Success Message
+            messages.success(request, "Registration successful! Await admin approval.")
+            return redirect("registration_success")  # ✅ Redirect to success page
 
         except Exception as e:
-            print("❌ Error Occurred: ", str(e))  
-            return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
+            messages.error(request, f"Something went wrong: {str(e)}")
+            return redirect("register_customer")  # ✅ Redirect on error
 
     return render(request, "donation/register.html")
 
@@ -209,22 +215,32 @@ def approve_user(request, user_id):
     return redirect("manage_members")
 
 
+
+
+
+
+from django.urls import reverse
+
+
 @login_required
 def reject_user(request, user_id):
     if request.method == "POST":
-        user = get_object_or_404(CustomUser, id=user_id)
-        user.delete()  # ✅ Delete user from database
-        print(f"❌ User {user.email} has been deleted.")
+        # ✅ Check if user exists
+        user = CustomUser.objects.filter(id=user_id).first()
+        if not user:
+            messages.error(request, "❌ User not found or already deleted.")
+            return redirect(reverse("manage_members"))  # Redirect to members page
 
-        # Handle AJAX request
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({"success": True, "message": "User deleted successfully!"})
+        user_email = user.email  # Save email before deleting
+        user.delete()
 
-        return redirect("manage_members")  # ✅ Redirect back to admin panel
+        # ✅ Store success message for Bootstrap alert
+        messages.success(request, f"❌ User {user_email} has been rejected and removed.")
 
-    return JsonResponse({"success": False, "message": "Invalid request method."})
+        return redirect(reverse("manage_members"))  # Redirect to members page
 
-
+    messages.error(request, "Invalid request method.")
+    return redirect(reverse("manage_members"))
 
 
 
@@ -354,16 +370,6 @@ def manage_members(request):
 
 
 
-
-
-
-@login_required
-@user_passes_test(lambda u: u.is_staff)
-def reject_user(request, user_id):
-    customer = get_object_or_404(Customer, id=user_id)
-    customer.delete()  # ❌ Rejecting user will remove them
-
-    return JsonResponse({"message": f"{customer.name} has been rejected and removed."})
 
 
 
@@ -608,39 +614,39 @@ def user_dashboard(request):
 
 
 
-
 @login_required
 def user_profile(request):
-    try:
-        customer, created = Customer.objects.get_or_create(user=request.user)  # ✅ Ensure Profile Exists
-    except Customer.DoesNotExist:
+    customer = Customer.objects.filter(user=request.user).first()  # ✅ Fetch existing customer only
+
+    if not customer:
         messages.error(request, "No profile data found. Please contact support.")
         return redirect("user_dashboard")
 
     if request.method == "POST":
-        customer.name = request.POST.get("name", customer.name)
-        customer.mobile = request.POST.get("mobile", customer.mobile)
-        customer.email = request.POST.get("email", customer.email)
-        customer.dob = request.POST.get("dob", customer.dob)
-        customer.aadhar = request.POST.get("aadhar", customer.aadhar)
-        customer.home_address = request.POST.get("home_address", customer.home_address)
-        customer.department = request.POST.get("department", customer.department)
-        customer.post = request.POST.get("post", customer.post)
-        customer.posting_district = request.POST.get("posting_district", customer.posting_district)
-        customer.posting_block = request.POST.get("posting_block", customer.posting_block)
-        customer.disease = request.POST.get("disease", customer.disease)
-        customer.cause_of_illness = request.POST.get("cause_of_illness", customer.cause_of_illness)
+        customer.name = request.POST.get("name") or customer.name
+        customer.mobile = request.POST.get("mobile") or customer.mobile
+        customer.email = request.POST.get("email") or customer.email
+        customer.dob = request.POST.get("dob") or customer.dob
+        customer.aadhar = request.POST.get("aadhar") or customer.aadhar
+        customer.home_address = request.POST.get("home_address") or customer.home_address
+        customer.department = request.POST.get("department") or customer.department
+        customer.post = request.POST.get("post") or customer.post
+        customer.posting_state = request.POST.get("posting_state") or customer.posting_state
+        customer.posting_district = request.POST.get("posting_district") or customer.posting_district
+        customer.disease = request.POST.get("disease") or customer.disease
+        customer.cause_of_illness = request.POST.get("cause_of_illness") or customer.cause_of_illness
 
         # ✅ Save Nominee Details
-        customer.first_nominee_name = request.POST.get("first_nominee_name", customer.first_nominee_name)
-        customer.first_nominee_relation = request.POST.get("first_nominee_relation", customer.first_nominee_relation)
-        customer.first_nominee_mobile = request.POST.get("first_nominee_mobile", customer.first_nominee_mobile)
+        customer.first_nominee_name = request.POST.get("first_nominee_name") or customer.first_nominee_name
+        customer.first_nominee_relation = request.POST.get("first_nominee_relation") or customer.first_nominee_relation
+        customer.first_nominee_mobile = request.POST.get("first_nominee_mobile") or customer.first_nominee_mobile
 
         customer.save()
         messages.success(request, "Profile updated successfully!")
         return redirect("user_profile")
 
     return render(request, "donation/user_profile.html", {"customer": customer})
+
 
 
 
@@ -767,3 +773,69 @@ def update_blood_donation_status(request, donation_id, status):
 
 
 
+
+
+
+import fitz  # PyMuPDF
+from django.http import FileResponse, HttpResponse
+from django.contrib.auth.decorators import login_required
+from io import BytesIO
+from .models import Customer
+
+@login_required
+def generate_id_card(request):
+    try:
+        customer = Customer.objects.get(user=request.user)
+    except Customer.DoesNotExist:
+        return HttpResponse("Customer profile not found", status=404)
+
+    # Load the existing ID Card PDF template
+    template_path = "static/assets/img/Margdata_ID_Card.pdf"  # Update with actual file path
+    doc = fitz.open(template_path)
+    page = doc[0]  # Select the first page
+
+    # Define text positions (X, Y)
+    text_positions = {
+        "name": (15, 70),  
+        "email": (15, 90),
+        "mobile": (15, 110),
+        "dob": (15, 130),  # ✅ Add DOB
+        "posting_state": (15, 150),  # ✅ Add Posting State
+        "posting_district": (15, 170),  # ✅ Add Posting District
+        "md_code": (15, 190),
+        "registered_on": (15, 210),
+    }
+
+    # Set font size and color
+    font_size = 8  # Increased font size for better readability
+    text_color = (0, 0, 0)  # Black
+    font_bold = "times-bold"  # Bold font for labels
+    font_regular = "times-roman"  # Regular font for values
+
+    # Function to insert text
+    def add_text(label, value, position):
+        """Helper function to add label and value in ID card"""
+        page.insert_text(
+            (position[0], position[1]),  # Position
+            f"{label} {value}",  # Combine label and value
+            fontsize=font_size, 
+            fontname=font_bold if "MD Code" in label or "Registered On" in label else font_regular, 
+            color=text_color
+        )
+
+     # Add user details to the PDF
+    add_text("Name:", customer.name, text_positions["name"])
+    add_text("Email:", customer.email, text_positions["email"])
+    add_text("Mobile:", customer.mobile, text_positions["mobile"])
+    add_text("DOB:", customer.dob.strftime('%d-%m-%Y') if customer.dob else "N/A", text_positions["dob"])  # ✅ Format DOB
+    add_text("Posting State:", customer.posting_state or "N/A", text_positions["posting_state"])  # ✅ Posting State
+    add_text("Posting District:", customer.posting_district or "N/A", text_positions["posting_district"])  # ✅ Posting District
+    add_text("MD Code:", customer.md_code, text_positions["md_code"])
+    add_text("Registered On:", customer.created_at.strftime('%d-%m-%Y'), text_positions["registered_on"])
+
+    # Save the modified PDF
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+
+    return FileResponse(buffer, as_attachment=True, filename="Margdata_ID_Card.pdf")

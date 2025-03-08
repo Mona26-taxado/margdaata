@@ -25,7 +25,7 @@ class CustomerRegistrationForm(forms.ModelForm):
         model = Customer
         fields = [
             'name', 'email', 'gender', 'dob', 'mobile', 'mobile_home', 'aadhar',
-            'department', 'post','posting_state', 'posting_district', 'posting_block',
+            'department', 'post','posting_state', 'posting_district',
             'home_address', 'home_district', 'disease', 'cause_of_illness',
             'payment_slip'
         ]
@@ -35,13 +35,10 @@ class CustomerRegistrationForm(forms.ModelForm):
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'department': forms.TextInput(attrs={'class': 'form-control'}),
             'post': forms.TextInput(attrs={'class': 'form-control'}),
-            'posting_district': forms.TextInput(attrs={'class': 'form-control'}),
-            'posting_block': forms.TextInput(attrs={'class': 'form-control'}),
             'home_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'cause_of_illness': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'posting_state': forms.Select(attrs={'class': 'form-control', 'id': 'state'}),
             'posting_district': forms.Select(attrs={'class': 'form-control', 'id': 'district'}),
-            'posting_block': forms.Select(attrs={'class': 'form-control', 'id': 'block'}),
         }
 
 
@@ -53,8 +50,7 @@ class CustomerEditForm(forms.ModelForm):
         fields = [
             "name", "email", "mobile", "mobile_home", "dob", "gender",
             "aadhar", "first_nominee_name", "first_nominee_relation", "first_nominee_mobile",
-            "department", "post", "posting_state", "posting_district",
-            "posting_block", "home_address", "home_district", "disease",
+            "department", "post", "posting_state", "posting_district", "home_address", "home_district", "disease",
             "cause_of_illness", "payment_slip", "approved"
         ]
         widgets = {
@@ -62,7 +58,6 @@ class CustomerEditForm(forms.ModelForm):
             "gender": forms.Select(attrs={"class": "form-control"}),
             "posting_state": forms.TextInput(attrs={"class": "form-control"}),
             "posting_district": forms.TextInput(attrs={"class": "form-control"}),
-            "posting_block": forms.TextInput(attrs={"class": "form-control"}),
             "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
             "cause_of_illness": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
             "payment_slip": forms.FileInput(attrs={"class": "form-control"}),

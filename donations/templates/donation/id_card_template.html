@@ -1,0 +1,36 @@
+{% extends "donation/base_user.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+    .card {
+        width: 350px;
+        padding: 20px;
+        border: 2px solid black;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+    .header {
+        background: #007bff;
+        color: white;
+        padding: 10px;
+        font-size: 20px;
+    }
+    .details {
+        margin-top: 10px;
+        text-align: left;
+    }
+</style>
+
+<div class="card">
+    <div class="header">Margdata Trust - ID Card</div>
+    <p><strong>Name:</strong> {{ name }}</p>
+    <p><strong>Email:</strong> {{ email }}</p>
+    <p><strong>Mobile:</strong> {{ mobile }}</p>
+    <p><strong>DOB:</strong> {{ dob }}</p>
+    <p><strong>MD Code:</strong> {{ md_code }}</p>
+    <p><strong>Address:</strong> {{ address }}</p>
+    <p><strong>Registered On:</strong> {{ registration_date }}</p>
+</div>
+
+{% endblock %}

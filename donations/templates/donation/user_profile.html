@@ -1,12 +1,8 @@
 {% extends 'donation/base_user.html' %}
 {% block content %}
-<!-- Custom CSS -->
 
 <style>
-
-.main-panel .row {
-    --bs-gutter-x: 12px;
-}
+/* Custom Styles for Profile Page */
 .profile-container {
     background: white;
     padding: 20px;
@@ -18,9 +14,28 @@
 .card-header {
     font-size: 1.5rem;
     font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-btn {
+    background: #28a745; /* Green color */
+    border: none;
+    padding: 8px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.edit-btn:hover {
+    background: #218838;
 }
 
 .btn-primary {
+    display: none; /* Initially hidden */
     background: #007bff;
     border: none;
     padding: 10px 20px;
@@ -32,13 +47,20 @@
     background: #0056b3;
 }
 
+input:disabled, textarea:disabled {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    cursor: not-allowed;
+}
 </style>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header bg-primary text-white">
                     <h3><i class="fa fa-user-circle"></i> User Profile</h3>
+                    <button id="editProfileBtn" class="edit-btn"><i class="fa fa-edit"></i> Edit Profile</button>
                 </div>
                 <div class="card-body">
                     
@@ -52,39 +74,39 @@
                     {% endif %}
 
                     <!-- ✅ Profile Form -->
-                    <form method="POST">
+                    <form method="POST" id="profileForm">
                         {% csrf_token %}
 
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label">First Name:</label>
-                                <input type="text" name="name" class="form-control" value="{{ customer.name }}" required>
+                                <label class="form-label"><b>Full Name:</b></label>
+                                <input type="text" name="name" class="form-control" value="{{ customer.name }}" disabled required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Mobile:</label>
-                                <input type="text" name="mobile" class="form-control" value="{{ customer.mobile }}" required>
-                            </div>
-                        </div>
-
-                        <div class="row mt-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Email:</label>
-                                <input type="email" name="email" class="form-control" value="{{ customer.email }}" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Date of Birth:</label>
-                                <input type="date" name="dob" class="form-control" value="{{ customer.dob|date:'Y-m-d' }}">
+                                <label class="form-label"><b>Mobile:</b></label>
+                                <input type="text" name="mobile" class="form-control" value="{{ customer.mobile }}" disabled required>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label">PAN Number:</label>
-                                <input type="text" name="pan" class="form-control" value="{{ customer.pan }}">
+                                <label class="form-label"><b>Email:</b></label>
+                                <input type="email" name="email" class="form-control" value="{{ customer.email }}" disabled required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Home Address:</label>
-                                <textarea name="home_address" class="form-control">{{ customer.home_address }}</textarea>
+                                <label class="form-label"><b>Date of Birth:</b></label>
+                                <input type="date" name="dob" class="form-control" value="{{ customer.dob|date:'Y-m-d' }}" disabled>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label"><b>Aadhar Number:</b></label>
+                                <input type="text" name="aadhar" class="form-control" value="{{ customer.aadhar }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label"><b>Home Address:</b></label>
+                                <textarea name="home_address" class="form-control" disabled>{{ customer.home_address }}</textarea>
                             </div>
                         </div>
 
@@ -93,23 +115,23 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label">Department:</label>
-                                <input type="text" name="department" class="form-control" value="{{ customer.department }}">
+                                <label class="form-label"><b>Department:</b></label>
+                                <input type="text" name="department" class="form-control" value="{{ customer.department }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Post:</label>
-                                <input type="text" name="post" class="form-control" value="{{ customer.post }}">
+                                <label class="form-label"><b>Post:</b></label>
+                                <input type="text" name="post" class="form-control" value="{{ customer.post }}" disabled>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label">Posting District:</label>
-                                <input type="text" name="posting_district" class="form-control" value="{{ customer.posting_district }}">
+                                <label class="form-label"><b>Posting State:</b></label>
+                                <input type="text" name="posting_state" class="form-control" value="{{ customer.posting_state }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Posting Block:</label>
-                                <input type="text" name="posting_block" class="form-control" value="{{ customer.posting_block }}">
+                                <label class="form-label"><b>Posting District:</b></label>
+                                <input type="text" name="posting_district" class="form-control" value="{{ customer.posting_district }}" disabled>
                             </div>
                         </div>
 
@@ -118,40 +140,39 @@
 
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label">Disease:</label>
-                                <input type="text" name="disease" class="form-control" value="{{ customer.disease }}">
+                                <label class="form-label"><b>Disease:</b></label>
+                                <input type="text" name="disease" class="form-control" value="{{ customer.disease }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Cause of Illness:</label>
-                                <textarea name="cause_of_illness" class="form-control">{{ customer.cause_of_illness }}</textarea>
+                                <label class="form-label"><b>Cause of Illness:</b></label>
+                                <textarea name="cause_of_illness" class="form-control" disabled>{{ customer.cause_of_illness }}</textarea>
                             </div>
                         </div>
 
                         <h4 class="mt-4"><i class="fa fa-user-friends"></i> Nominee Details</h4>
-<hr>
+                        <hr>
 
-<div class="row">
-    <div class="col-md-6">
-        <label class="form-label">First Nominee Name:</label>
-        <input type="text" name="first_nominee_name" class="form-control" value="{{ customer.first_nominee_name|default_if_none:'' }}">
-    </div>
-    <div class="col-md-6">
-        <label class="form-label">First Nominee Relation:</label>
-        <input type="text" name="first_nominee_relation" class="form-control" value="{{ customer.first_nominee_relation|default_if_none:'' }}">
-    </div>
-</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label"><b>First Nominee Name:</b></label>
+                                <input type="text" name="first_nominee_name" class="form-control" value="{{ customer.first_nominee_name|default:'' }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label"><b>First Nominee Relation:</b></label>
+                                <input type="text" name="first_nominee_relation" class="form-control" value="{{ customer.first_nominee_relation|default:'' }}" disabled>
+                            </div>
+                        </div>
 
-<div class="row mt-3">
-    <div class="col-md-6">
-        <label class="form-label">First Nominee Mobile:</label>
-        <input type="text" name="first_nominee_mobile" class="form-control" value="{{ customer.first_nominee_mobile|default_if_none:'' }}">
-    </div>
-</div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label"><b>First Nominee Mobile:</b></label>
+                                <input type="text" name="first_nominee_mobile" class="form-control" value="{{ customer.first_nominee_mobile|default:'' }}" disabled>
+                            </div>
+                        </div>
 
-
-                        <!-- ✅ Update Profile Button -->
+                        <!-- ✅ Update Profile Button (Initially Hidden) -->
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" id="saveProfileBtn" class="btn btn-primary">
                                 <i class="fa fa-save"></i> Update Profile
                             </button>
                         </div>
@@ -164,6 +185,14 @@
     </div>
 </div>
 
-    
+<!-- ✅ JavaScript to Enable Editing -->
+<script>
+document.getElementById('editProfileBtn').addEventListener('click', function () {
+    var inputs = document.querySelectorAll("#profileForm input, #profileForm textarea");
+    inputs.forEach(input => input.removeAttribute("disabled"));
+    document.getElementById("saveProfileBtn").style.display = "block";
+    this.style.display = "none";
+});
+</script>
 
 {% endblock %}

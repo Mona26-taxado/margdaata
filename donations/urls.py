@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.shortcuts import render
 from .views import register_customer, manage_members, edit_member, user_view_members,user_logout, delete_member, add_member, submit_blood_donation, blood_donation_list, update_blood_donation_status, view_members
-from .views import approve_user, login_view,  admin_dashboard, user_dashboard, reject_user
+from .views import approve_user, login_view,  admin_dashboard, user_dashboard, reject_user, generate_id_card
 from .views import generate_payment_receipt, running_sahyog, sahyog_list, edit_sahyog, delete_sahyog, send_notification, manage_notifications, delete_notification
 from django.conf.urls.static import static
 from .views import user_profile, upload_receipt, user_receipts, admin_receipts, upload_vyawastha_shulk, user_vyawastha_shulk_receipts, admin_vyawastha_shulk_receipts
@@ -17,7 +17,7 @@ urlpatterns = [
     path("register/", register_customer, name="register_customer"),
     path('registration-success/', lambda request: render(request, 'donation/registration_success.html'), name='registration_success'),
     path("approve-user/<int:user_id>/", approve_user, name="approve_user"),
-    path("reject-user/<int:user_id>/", reject_user, name="reject_user"),  # ✅ Ensure it's here
+    path("reject-user/<int:user_id>/", reject_user, name="reject_user"),
     path('receipt/<int:customer_id>/', generate_payment_receipt, name='generate_payment_receipt'),
     path('login/', login_view, name='login'),
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
@@ -54,7 +54,7 @@ urlpatterns = [
     path("donate/", submit_blood_donation, name="submit_blood_donation"),
     path("donations/", blood_donation_list, name="blood_donation_list"),
     path("update_donation/<int:donation_id>/<str:status>/", update_blood_donation_status, name="update_blood_donation_status"),
-
+    path("generate_id_card/", generate_id_card, name="generate_id_card"),
 
 
 

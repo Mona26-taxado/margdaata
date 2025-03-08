@@ -60,11 +60,10 @@ class Customer(models.Model):
     first_nominee_mobile = models.CharField(max_length=15, null=True, blank=True)
 
     # ✅ Other Details
-    department = models.CharField(max_length=100, default="General")
-    post = models.CharField(max_length=100, default="Not Assigned")
-    posting_state = models.CharField(max_length=100, default="Not Assigned")
-    posting_district = models.CharField(max_length=100, default="Not Assigned")
-    posting_block = models.CharField(max_length=100, default="Not Assigned")
+    department = models.CharField(max_length=100, null=True, blank=True)
+    post = models.CharField(max_length=100, null=True, blank=True)
+    posting_state = models.CharField(max_length=100, null=True, blank=True)
+    posting_district = models.CharField(max_length=100, null=True, blank=True)
     home_address = models.TextField()
     home_district = models.CharField(max_length=100)
     disease = models.CharField(max_length=100, blank=True, null=True)

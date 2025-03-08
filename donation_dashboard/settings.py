@@ -25,12 +25,12 @@ SECRET_KEY = 'django-insecure-b!htcm#y^!igc!_7+y*qpeg&dwqmp0rrrg#y6c5l%@-c@-9a*m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
-# CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
-# CSRF_COOKIE_SECURE = True
+ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
+CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
+CSRF_COOKIE_SECURE = True
 
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 # Application definition
 

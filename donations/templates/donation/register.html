@@ -106,6 +106,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 {% endif %}
+{% load static %}
+
+<div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
+    <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
+    <img src="{% static 'assets/img/QR.jpg' %}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+    <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
+</div>
 
         <div class="row mt-3">
             <div class="col-md-6">

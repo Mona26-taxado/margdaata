@@ -762,6 +762,8 @@ def submit_blood_donation(request):
     return render(request, "donation/blood_donation_form.html", {"form": form})
 
 
+
+
 @login_required
 def blood_donation_list(request):
     donations = BloodDonation.objects.all().order_by("-created_at")
@@ -867,6 +869,8 @@ def add_wrapped_text(page, label, value, position, max_width=120, line_spacing=8
 
     # ✅ Insert the last line
     page.insert_text((position[0], position[1] + y_offset), current_line, fontsize=font_size, fontname=font_regular, color=text_color)
+
+
 
 
 

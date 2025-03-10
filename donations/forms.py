@@ -25,13 +25,14 @@ class CustomerRegistrationForm(forms.ModelForm):
         model = Customer
         fields = [
             'name', 'email', 'gender', 'dob', 'mobile', 'mobile_home', 'aadhar',
-            'department', 'post','posting_state', 'posting_district',
-            'home_address', 'home_district', 'disease', 'cause_of_illness',
+            'department', 'post','posting_state', 'posting_district',"transaction_id","home_address","home_district",
+            'home_address', 'disease', 'cause_of_illness',
             'payment_slip'
         ]
         widgets = {
             'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'payment_slip': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'transaction_id': forms.TextInput(attrs={'class': 'form-control'}),
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'department': forms.TextInput(attrs={'class': 'form-control'}),
             'post': forms.TextInput(attrs={'class': 'form-control'}),
@@ -49,8 +50,8 @@ class CustomerEditForm(forms.ModelForm):
         model = Customer
         fields = [
             "name", "email", "mobile", "mobile_home", "dob", "gender",
-            "aadhar", "first_nominee_name", "first_nominee_relation", "first_nominee_mobile",
-            "department", "post", "posting_state", "posting_district", "home_address", "home_district", "disease",
+            "aadhar", "first_nominee_name", "first_nominee_relation", "first_nominee_mobile", 
+            "department", "post", "posting_state", "posting_district", "home_address","disease","transaction_id","home_district",
             "cause_of_illness", "payment_slip", "approved"
         ]
         widgets = {
@@ -61,6 +62,7 @@ class CustomerEditForm(forms.ModelForm):
             "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
             "cause_of_illness": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
             "payment_slip": forms.FileInput(attrs={"class": "form-control"}),
+            "transaction_id": forms.TextInput(attrs={"class": "form-control"}),
             "approved": forms.Select(choices=[(True, "Approved"), (False, "Pending")], attrs={"class": "form-control"}),
 
             # ✅ Add Nominee Details Styling

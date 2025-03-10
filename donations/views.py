@@ -37,15 +37,13 @@ import os
 
 
 
-User = get_user_model()  # Get correct User model
-
 def admin_dashboard(request):
-    total_users = User.objects.count()
+    total_users = CustomUser.objects.filter(is_active=True).count()
     total_sahyog = Sahyog.objects.count()
     total_blood_donors = BloodDonation.objects.count()
     total_vyawastha_shulk = VyawasthaShulkReceipt.objects.count()
 
-    # Print values in the terminal
+    # Debugging: Print values in console
     print("DEBUG - Total Users:", total_users)
     print("DEBUG - Total Sahyog:", total_sahyog)
     print("DEBUG - Total Blood Donors:", total_blood_donors)
@@ -57,7 +55,9 @@ def admin_dashboard(request):
         "total_blood_donors": total_blood_donors,
         "total_vyawastha_shulk": total_vyawastha_shulk,
     }
-    return render(request, "donations/admin_dashboard.html", context)
+
+    return render(request, "donation/admin_dashboard.html", context)
+
 
 
 
@@ -108,45 +108,35 @@ from django.contrib import messages  # ✅ Import messages for Bootstrap alerts
 def register_customer(request):
     if request.method == "POST":
         try:
-            print("✅ Received POST Request!")  # Debugging
-
             name = request.POST.get("name")
             email = request.POST.get("email")
+            password = request.POST.get("password")  # ✅ Get Password from Form
             mobile = request.POST.get("mobile")
-            password = request.POST.get("password")
-            dob = request.POST.get("dob")  
-            aadhar = request.POST.get("aadhar")  
-            payment_slip = request.FILES.get("payment_slip")  
+            dob = request.POST.get("dob")
+            aadhar = request.POST.get("aadhar")
+            payment_slip = request.FILES.get("payment_slip")
+            transaction_id = request.POST.get("transaction_id")  # ✅ Get Transaction ID
+            posting_state = request.POST.get("posting_state")  # ✅ Get Posting State
+            posting_district = request.POST.get("posting_district")  # ✅ Get Posting District
+            department = request.POST.get("department")  # ✅ Get Department
+            post = request.POST.get("post")  # ✅ Get Post
+            home_address = request.POST.get("home_address")  # ✅ Get Home Address
 
-            if not name or not email or not mobile or not password or not dob or not aadhar:
+            if not name or not email or not password or not mobile or not dob or not aadhar or not payment_slip or not transaction_id or not posting_state or not posting_district or not department or not post or not home_address:
                 messages.error(request, "All fields are required.")
-                return redirect("register_customer")  # ✅ Redirect to same page
+                return redirect("register_customer")  
 
-            if not payment_slip:
-                messages.error(request, "Payment slip is required.")
-                return redirect("register_customer")
-
-            dob = datetime.strptime(dob, "%Y-%m-%d").date()
-
-            # ✅ Check if email or Aadhar already exists
-            if CustomUser.objects.filter(email=email).exists():
-                messages.error(request, "Email already registered.")
-                return redirect("register_customer")
-
-            if Customer.objects.filter(aadhar=aadhar).exists():
-                messages.error(request, "Aadhar number already registered.")
-                return redirect("register_customer")
-
-            # ✅ Create a user in CustomUser model
+            # ✅ Save user
             user = CustomUser.objects.create(
                 email=email,
-                password=make_password(password),  # ✅ Encrypt password  
                 role="user",
-                is_approved=False,  # ✅ Requires admin approval
-                is_active=False  
+                is_approved=False,
+                is_active=False
             )
+            user.set_password(password)
+            user.save()
 
-            # ✅ Create corresponding Customer entry
+            # ✅ Save Customer
             customer = Customer.objects.create(
                 user=user,  
                 name=name,
@@ -155,36 +145,48 @@ def register_customer(request):
                 dob=dob,
                 aadhar=aadhar,
                 approved=False,  
-                payment_slip=payment_slip  
+                payment_slip=payment_slip,
+                transaction_id=transaction_id,  # ✅ Save transaction ID
+                posting_state=posting_state,  # ✅ Save Posting State
+                posting_district=posting_district,  # ✅ Save Posting District
+                department=department,  # ✅ Save Department
+                post=post,  # ✅ Save Post
+                home_address=home_address  # ✅ Save Home Address
             )
 
-            print("✅ Customer Saved Successfully!")  
-
-            # ✅ Send Admin Notification
-            subject = "New User Registration - Pending Approval"
+            # ✅ Send Email with Payment Slip & Transaction ID
+            subject = "New User Registration - Payment Slip Attached"
             message = f"""
-            A new user has registered on your platform.
+            A new user has registered.
             
             Name: {name}
             Email: {email}
             Mobile: {mobile}
             Date of Birth: {dob}
             Aadhar: {aadhar}
+            Transaction ID: {transaction_id}
 
             Please review their registration details and approve their account.
             """
-            admin_email = settings.DEFAULT_FROM_EMAIL  
-            send_mail(subject, message, admin_email, [admin_email])
+            admin_email = "your_admin_email@example.com"
 
-            # ✅ Success Message
+            email_message = EmailMessage(subject, message, to=[admin_email])
+            if customer.payment_slip:
+                payment_slip_path = customer.payment_slip.path
+                email_message.attach_file(payment_slip_path)
+
+            email_message.send()
+
             messages.success(request, "Registration successful! Await admin approval.")
-            return redirect("registration_success")  # ✅ Redirect to success page
+            return redirect("registration_success")
 
         except Exception as e:
-            messages.error(request, f"Something went wrong: {str(e)}")
-            return redirect("register_customer")  # ✅ Redirect on error
+            messages.error(request, f"Error: {str(e)}")
+            return redirect("register_customer")
 
     return render(request, "donation/register.html")
+
+
 
 
 
@@ -359,12 +361,19 @@ def user_dashboard(request):
 
 
 def manage_members(request):
+    # ✅ Fetch both self-registered and admin-added members
     approved_users = Customer.objects.filter(approved=True)
     pending_requests = Customer.objects.filter(approved=False)
 
+    # ✅ Include admin-added users who don't have a `Customer` record
+    admin_added_users = CustomUser.objects.filter(is_approved=True, is_staff=False).exclude(
+        id__in=approved_users.values_list('user_id', flat=True)
+    )
+
     return render(request, "donation/manage_members.html", {
         "approved_users": approved_users,
-        "pending_requests": pending_requests
+        "pending_requests": pending_requests,
+        "admin_added_users": admin_added_users  # ✅ Now also includes admin-added users
     })
 
 
@@ -455,17 +464,58 @@ def user_view_members(request):
 @user_passes_test(lambda u: u.is_staff)
 def add_member(request):
     if request.method == "POST":
+        print("✅ DEBUG: Received POST request to add member")
         form = CustomUserCreationForm(request.POST)
+
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_approved = True  # Automatically approve admin-created members
-            user.is_active = True
-            user.save()
-            messages.success(request, "New member added successfully.")
-            return redirect('manage_members')
+            try:
+                user = form.save(commit=False)
+                user.is_approved = True  # ✅ Auto-approve admin-added users
+                user.is_active = True  # ✅ Activate user
+                user.role = "user"  # ✅ Ensure correct role
+                
+                print(f"🔍 DEBUG: Trying to save user {user.email}")  # Debug print
+                
+                user.save()
+                
+                print(f"✅ User {user.email} saved successfully!")  # Debug print
+
+                # ✅ Ensure a `Customer` entry is created
+                customer, created = Customer.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        "name": request.POST.get("name"),
+                        "email": user.email,
+                        "mobile": request.POST.get("mobile"),
+                        "approved": True,  # ✅ Auto-approve
+                        "posting_state": request.POST.get("posting_state"),  # ✅ Save State
+                        "posting_district": request.POST.get("posting_district"),  # ✅ Save District
+                    }
+                )
+
+                print(f"✅ Customer entry created for {user.email}")  # Debug print
+                print(f"📌 State: {customer.posting_state}, District: {customer.posting_district}")  # Debugging output
+
+                messages.success(request, "New member added successfully.")
+                return redirect('manage_members')
+
+            except Exception as e:
+                print(f"❌ ERROR while saving user: {str(e)}")  # Print error message
+                messages.error(request, f"Error adding member: {str(e)}")
+        else:
+            print("❌ FORM ERROR:", form.errors)  # Print validation errors
+            messages.error(request, f"Form errors: {form.errors}")
+
     else:
         form = CustomUserCreationForm()
+
     return render(request, 'donation/add_member.html', {'form': form})
+
+
+
+
+
+
 
 
 @login_required
@@ -613,39 +663,10 @@ def user_dashboard(request):
     return render(request, 'donation/user_dashboard.html', {'user': request.user})
 
 
-
-@login_required
 def user_profile(request):
-    customer = Customer.objects.filter(user=request.user).first()  # ✅ Fetch existing customer only
+    customer = get_object_or_404(Customer, user=request.user)  # ✅ Get logged-in user profile
+    return render(request, "donation/user_profile.html", {"customer": customer})  # ✅ Send all details
 
-    if not customer:
-        messages.error(request, "No profile data found. Please contact support.")
-        return redirect("user_dashboard")
-
-    if request.method == "POST":
-        customer.name = request.POST.get("name") or customer.name
-        customer.mobile = request.POST.get("mobile") or customer.mobile
-        customer.email = request.POST.get("email") or customer.email
-        customer.dob = request.POST.get("dob") or customer.dob
-        customer.aadhar = request.POST.get("aadhar") or customer.aadhar
-        customer.home_address = request.POST.get("home_address") or customer.home_address
-        customer.department = request.POST.get("department") or customer.department
-        customer.post = request.POST.get("post") or customer.post
-        customer.posting_state = request.POST.get("posting_state") or customer.posting_state
-        customer.posting_district = request.POST.get("posting_district") or customer.posting_district
-        customer.disease = request.POST.get("disease") or customer.disease
-        customer.cause_of_illness = request.POST.get("cause_of_illness") or customer.cause_of_illness
-
-        # ✅ Save Nominee Details
-        customer.first_nominee_name = request.POST.get("first_nominee_name") or customer.first_nominee_name
-        customer.first_nominee_relation = request.POST.get("first_nominee_relation") or customer.first_nominee_relation
-        customer.first_nominee_mobile = request.POST.get("first_nominee_mobile") or customer.first_nominee_mobile
-
-        customer.save()
-        messages.success(request, "Profile updated successfully!")
-        return redirect("user_profile")
-
-    return render(request, "donation/user_profile.html", {"customer": customer})
 
 
 
@@ -774,8 +795,6 @@ def update_blood_donation_status(request, donation_id, status):
 
 
 
-
-
 import fitz  # PyMuPDF
 from django.http import FileResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -790,48 +809,31 @@ def generate_id_card(request):
         return HttpResponse("Customer profile not found", status=404)
 
     # Load the existing ID Card PDF template
-    template_path = "static/assets/img/Margdata_ID_Card.pdf"  # Update with actual file path
+    template_path = "static/assets/img/Margdata_ID_Card.pdf"
     doc = fitz.open(template_path)
     page = doc[0]  # Select the first page
 
     # Define text positions (X, Y)
     text_positions = {
-        "name": (15, 70),  
-        "email": (15, 90),
-        "mobile": (15, 110),
-        "dob": (15, 130),  # ✅ Add DOB
-        "posting_state": (15, 150),  # ✅ Add Posting State
-        "posting_district": (15, 170),  # ✅ Add Posting District
-        "md_code": (15, 190),
-        "registered_on": (15, 210),
+        "name": (10, 70),  
+        "email": (10, 90),
+        "mobile": (10, 110),
+        "dob": (10, 130),  
+        "aadhar": (10, 150),
+        "posting_state": (10, 170),
+        "md_code": (10, 190),
+        "registered_on": (10, 210),
     }
 
-    # Set font size and color
-    font_size = 8  # Increased font size for better readability
-    text_color = (0, 0, 0)  # Black
-    font_bold = "times-bold"  # Bold font for labels
-    font_regular = "times-roman"  # Regular font for values
-
-    # Function to insert text
-    def add_text(label, value, position):
-        """Helper function to add label and value in ID card"""
-        page.insert_text(
-            (position[0], position[1]),  # Position
-            f"{label} {value}",  # Combine label and value
-            fontsize=font_size, 
-            fontname=font_bold if "MD Code" in label or "Registered On" in label else font_regular, 
-            color=text_color
-        )
-
-     # Add user details to the PDF
-    add_text("Name:", customer.name, text_positions["name"])
-    add_text("Email:", customer.email, text_positions["email"])
-    add_text("Mobile:", customer.mobile, text_positions["mobile"])
-    add_text("DOB:", customer.dob.strftime('%d-%m-%Y') if customer.dob else "N/A", text_positions["dob"])  # ✅ Format DOB
-    add_text("Posting State:", customer.posting_state or "N/A", text_positions["posting_state"])  # ✅ Posting State
-    add_text("Posting District:", customer.posting_district or "N/A", text_positions["posting_district"])  # ✅ Posting District
-    add_text("MD Code:", customer.md_code, text_positions["md_code"])
-    add_text("Registered On:", customer.created_at.strftime('%d-%m-%Y'), text_positions["registered_on"])
+    # ✅ Add user details with better text wrapping
+    add_wrapped_text(page, "Name:", customer.name or "N/A", text_positions["name"])
+    add_wrapped_text(page, "Email:", customer.email or "N/A", text_positions["email"], max_width=120, line_spacing=10)
+    add_wrapped_text(page, "Mobile:", customer.mobile or "N/A", text_positions["mobile"])
+    add_wrapped_text(page, "DOB:", customer.dob.strftime('%d-%m-%Y') if customer.dob else "N/A", text_positions["dob"])
+    add_wrapped_text(page, "Aadhar:", customer.aadhar or "N/A", text_positions["aadhar"])
+    add_wrapped_text(page, "State:", customer.posting_state or "N/A", text_positions["posting_state"], max_width=120, line_spacing=10)
+    add_wrapped_text(page, "MD Code:", customer.md_code or "N/A", text_positions["md_code"])
+    add_wrapped_text(page, "Registered On:", customer.created_at.strftime('%d-%m-%Y'), text_positions["registered_on"])
 
     # Save the modified PDF
     buffer = BytesIO()
@@ -839,3 +841,34 @@ def generate_id_card(request):
     buffer.seek(0)
 
     return FileResponse(buffer, as_attachment=True, filename="Margdata_ID_Card.pdf")
+
+
+# ✅ Improved Text Wrapping Function
+def add_wrapped_text(page, label, value, position, max_width=120, line_spacing=8):
+    """Handles wrapping text if it exceeds max width."""
+    words = (f"{label} {value}").split()
+    current_line = ""
+    y_offset = 0
+    font_size = 8
+    text_color = (0, 0, 0)
+    font_regular = "times-roman"
+
+    for word in words:
+        test_line = f"{current_line} {word}".strip()
+        text_width = page.insert_text(position, test_line, fontsize=font_size, fontname=font_regular, color=text_color)
+
+        # ✅ If text exceeds max_width, move to the next line
+        if text_width > max_width:
+            page.insert_text((position[0], position[1] + y_offset), current_line, fontsize=font_size, fontname=font_regular, color=text_color)
+            current_line = word  # Start new line
+            y_offset += line_spacing  # Adjust line spacing
+        else:
+            current_line = test_line
+
+    # ✅ Insert the last line
+    page.insert_text((position[0], position[1] + y_offset), current_line, fontsize=font_size, fontname=font_regular, color=text_color)
+
+
+
+
+

@@ -1,4 +1,5 @@
 {% extends 'donation/base.html' %}
+
 {% block content %}
 <!-- Custom CSS -->
 <style>
@@ -28,109 +29,175 @@
     }
 </style>
 
-
 <div class="container">
-<h2 class="text-center mb-4">Manage Members</h2>
-{% if messages %}
-    <div class="container mt-3">
-        {% for message in messages %}
-            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
-                <strong>{{ message }}</strong>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
+    <h2 class="text-center mb-4">Manage Members</h2>
 
-<!-- Search Bar -->
-<div class="mb-3">
-    <input type="text" id="searchInput" class="form-control" placeholder="Search by name or email...">
-</div>
-<div class="card">
-    <div class="card-header bg-warning text-dark">
-        Pending Requests
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-    <table class="table table-hover" id="pendingTable">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Mobile</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in pending_requests %}
-            <tr>
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.mobile }}</td>
-                <td>
-                    <form method="post" action="{% url 'approve_user' user.user.id %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success btn-sm">✅ Approve</button>
-                    </form>
-
-                    <form method="POST" action="{% url 'reject_user' user.id %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">❌ Reject</button>
-                    </form>
-                                     
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="text-center text-muted">No pending requests.</td>
-            </tr>
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
+        </div>
+    {% endif %}
+
+    <!-- Search Bar with Button -->
+    <div class="mb-3 input-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or transaction ID...">
+        <button id="searchBtn" class="btn btn-primary">🔍 Search</button>
+    </div>
+
+    <!-- Pending Requests Table -->
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            Pending Requests
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="pendingTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Mobile</th>
+                            <th>Transaction ID</th>
+                            <th>Registered On</th>
+                            <th>Payment Slip</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in pending_requests %}
+                        <tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.mobile }}</td>
+                            <td>{{ user.transaction_id }}</td>
+                            <td>{{ user.user.date_joined|date:"d M Y" }}</td>
+                            <td>
+                                {% if user.payment_slip %}
+                                    <a href="{{ user.payment_slip.url }}" class="btn btn-info btn-sm" target="_blank">📄 Download</a>
+                                {% else %}
+                                    <span class="text-muted">Not Uploaded</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'approve_user' user.user.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">✅ Approve</button>
+                                </form>
+
+                                <form method="POST" action="{% url 'reject_user' user.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">❌ Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No pending requests.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination for Pending Users -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if pending_requests.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ pending_requests.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">{{ pending_requests.number }}</span>
+                    </li>
+
+                    {% if pending_requests.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ pending_requests.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Approved Users Table -->
+    <div class="card mt-4">
+        <div class="card-header bg-success text-white">
+            Approved Users
+        </div>
+        <div class="card-body">
+            <table class="table table-hover" id="approvedTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Transaction ID</th>
+                        <th>Registered On</th>
+                        <th>Payment Slip</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in approved_users %}
+                    <tr>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.mobile }}</td>
+                        <td>{{ user.transaction_id }}</td>
+                        <td>{{ user.user.date_joined|date:"d M Y" }}</td>
+                        <td>
+                            {% if user.payment_slip %}
+                                <a href="{{ user.payment_slip.url }}" class="btn btn-info btn-sm" target="_blank">📄 Download</a>
+                            {% else %}
+                                <span class="text-muted">Not Uploaded</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No approved users yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination for Approved Users -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if approved_users.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ approved_users.previous_page_number }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ approved_users.number }}</span>
+                </li>
+
+                {% if approved_users.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ approved_users.next_page_number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 </div>
 
-</div>
-<!-- Approved Users Table -->
-<div class="card mb-4">
-    <div class="card-header bg-success text-white">
-        Approved Users
-    </div>
-    <div class="card-body">
-        <table class="table table-hover" id="approvedTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in approved_users %}
-                <tr>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.mobile }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="text-center text-muted">No approved users yet.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Pending Requests Table -->
-</div>
-
-<!-- JavaScript for Search Functionality -->
+<!-- JavaScript for Search & Pagination -->
 <script>
-document.getElementById("searchInput").addEventListener("keyup", function() {
-    let filter = this.value.toLowerCase();
+document.getElementById("searchBtn").addEventListener("click", function() {
+    let filter = document.getElementById("searchInput").value.toLowerCase();
     let rowsApproved = document.querySelectorAll("#approvedTable tbody tr");
     let rowsPending = document.querySelectorAll("#pendingTable tbody tr");
 
@@ -144,42 +211,7 @@ document.getElementById("searchInput").addEventListener("keyup", function() {
         row.style.display = text.includes(filter) ? "" : "none";
     });
 });
-
-
-document.querySelectorAll(".reject-btn").forEach(button => {
-    button.addEventListener("click", function(event) {
-        setTimeout(() => {
-            location.reload();  // ✅ Refresh page after action
-        }, 1000);
-    });
-});
-
-document.querySelectorAll(".reject-btn").forEach(button => {
-    button.addEventListener("click", function(event) {
-        event.preventDefault();
-
-        let userId = this.dataset.userId;
-        let row = this.closest("tr");
-
-        fetch(`/donations/reject-user/${userId}/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
-            }
-        }).then(response => {
-            if (response.ok) {
-                row.remove();  // ✅ Remove user from table after deletion
-            } else {
-                alert("Error rejecting user.");
-            }
-        }).catch(error => console.error("Error:", error));
-    });
-});
-
-
-
 </script>
 
-    
-
 {% endblock %}
+

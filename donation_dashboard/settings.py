@@ -25,12 +25,12 @@ SECRET_KEY = 'django-insecure-b!htcm#y^!igc!_7+y*qpeg&dwqmp0rrrg#y6c5l%@-c@-9a*m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
-CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
-CSRF_COOKIE_SECURE = True
+# ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
+# CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
+# CSRF_COOKIE_SECURE = True
 
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -84,6 +84,8 @@ WSGI_APPLICATION = 'donation_dashboard.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -97,6 +99,9 @@ DATABASES = {
         },
     }
 }
+
+
+
 
 
 
@@ -171,6 +176,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'arjunmoto26@gmail.com'  # Replace with your admin email
-EMAIL_HOST_PASSWORD = 'qclv akmi hhcp pkzx'  # Use App Password if 2FA is enabled
+EMAIL_HOST_USER = 'margdatatrust2025@gmail.com'  # Replace with your admin email
+EMAIL_HOST_PASSWORD = 'gfsk zxli lmkv gygp'  # Use App Password if 2FA is enabled
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

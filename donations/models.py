@@ -12,8 +12,8 @@ class CustomUser(AbstractUser):
         ('admin', 'Custom Admin'),
         ('user', 'User'),
     ]
+    username = models.CharField(max_length=150, unique=True, blank=True, null=True)  # Allow blank usernames
     email = models.EmailField(unique=True)  # Email is required and unique
-    username = None  # ✅ Remove username field
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     is_approved = models.BooleanField(default=False)  # Approval field
 
@@ -32,8 +32,10 @@ class CustomUser(AbstractUser):
         blank=True
     )
 
-    def __str__(self):
-        return f"{self.email} ({self.role})"  # ✅ Fix to avoid username error
+    def save(self, *args, **kwargs):
+        if not self.username:  # Auto-generate username if blank
+            self.username = self.email
+        super().save(*args, **kwargs)
 
 
 # ✅ Customer Model (Linked to CustomUser)
@@ -68,6 +70,7 @@ class Customer(models.Model):
     home_district = models.CharField(max_length=100)
     disease = models.CharField(max_length=100, blank=True, null=True)
     cause_of_illness = models.TextField(blank=True, null=True)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
 
     # ✅ Payment Slip Upload
     payment_slip = models.FileField(upload_to='payment_slips/', blank=False, null=False)

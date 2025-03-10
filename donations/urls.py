@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.shortcuts import render
 from .views import register_customer, manage_members, edit_member, user_view_members,user_logout, delete_member, add_member, submit_blood_donation, blood_donation_list, update_blood_donation_status, view_members
@@ -57,6 +58,11 @@ urlpatterns = [
     path("generate_id_card/", generate_id_card, name="generate_id_card"),
 
 
+    # Password Reset URLs
+    path("password_reset/", auth_views.PasswordResetView.as_view(template_name="donation/password_reset.html"), name="password_reset"),
+    path("password_reset/done/", auth_views.PasswordResetDoneView.as_view(template_name="donation/password_reset_done.html"), name="password_reset_done"),
+    path("reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(template_name="donation/password_reset_confirm.html"), name="password_reset_confirm"),
+    path("reset/done/", auth_views.PasswordResetCompleteView.as_view(template_name="donation/password_reset_complete.html"), name="password_reset_complete"),
 
 
     

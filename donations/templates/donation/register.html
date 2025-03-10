@@ -190,12 +190,12 @@
                 <select name="department" class="form-control" required>
                     <option value="" selected disabled>Select Department</option>
                     <option value="Central Department - Railways, Postal, Airforce">Central Department - Railways, Postal, Airforce"</option>
-                    <option value="Government Employees/Officers of Central Departments">Government Employees/Officers of Central Departments</option>
+                    <option value="Government Employees/Officers of Central Departments">Government Employees/Officers of State Departments</option>
                     <option value="Contract Employees/Officers of Departments">Contract Employees/Officers of Departments</option>
                     <option value="Kendriya Vidyalaya Teachers & Non-Teaching Staff">Kendriya Vidyalaya Teachers & Non-Teaching Staff</option>
                     <option value="Technical Education Teachers & Non-Teaching Staff">Technical Education Teachers & Non-Teaching Staff</option>
                     <option value="All Teachers in Government/Private Jobs">All Teachers in Government/Private Jobs</option>
-                    <option value="other">other</option>
+                    <option value="other">Other</option>
                 </select>
             </div>
             <div class="col-md-6">
@@ -211,7 +211,7 @@
                     <option value="Compounder">Compounder</option>
                     <option value="Doctor">Doctor</option>
                     <option value="Engineer">Engineer</option>
-                    <option value="other">other</option>
+                    <option value="other">Other</option>
                 </select>
             </div>
         </div>
@@ -271,23 +271,28 @@
 
   </div>   
   <!-- Existing form fields here -->
-        
-  <div class="mt-3 text-center">
-    <a href="upi://pay?pa=margdatatrust@sbi&pn=Margdata%20Trust&mc=&tid=&tr=&tn=Donation&am=&cu=INR" class="btn btn-primary" id="payNowBtn">Pay Now</a>
+  <div class="row mt-3">
+  <div class="col-md-6">
+    <label class="form-label"><i class="fa fa-file-invoice"></i> Transaction ID *</label>
+    <input type="text" name="transaction_id" class="form-control" placeholder="Enter Transaction ID" required>
+</div>
+<div class="col-md-6">
+    <label class="form-label"><i class="fa fa-upload"></i> Upload Payment Slip *</label>
+<input type="file" name="payment_slip" class="form-control required">
+<div class="invalid-feedback">Please upload your payment slip.</div>
+</div>
 </div>
 
-<div class="qr-container" id="qrContainer">
-    <h5>Scan & Pay</h5>
-    <img src="{% static 'assets/img/QR.jpg' %}" alt="QR Code" class="img-fluid" style="max-width: 300px;">
-    <p>UPI ID: margdatatrust@sbi</p>
-</div>  
-        <div class="mt-3">
-            <div class="col-md-12">
-                <label class="form-label"><i class="fa fa-upload"></i> Upload Payment Slip *</label>
-            <input type="file" name="payment_slip" class="form-control required">
-            <div class="invalid-feedback">Please upload your payment slip.</div>
-            </div>
-        </div>
+<div class="mt-3">
+    <input type="checkbox" id="terms" name="terms" required>
+    <label for="terms" class="form-label">
+        मैंने <strong>मार्गदाता ट्रस्ट</strong> के नियम और विनियम पढ़े हैं। मैं सभी नियमों और शर्तों से सहमत हूँ। 
+        यदि मैं <strong>मार्गदाता ट्रस्ट</strong> के द्वारा बनाए गए नियमों के तहत नियमित रूप से योगदान नहीं करता हूँ 
+        तो मेरा नामांकित व्यक्ति वित्तीय सहायता के लिए अपील नहीं करेगा।
+        <br>
+    </label>
+</div>
+
 
         <button type="submit" class="btn btn-custom w-100 mt-3"><i class="fa fa-paper-plane"></i> Register</button>
     </form>
@@ -297,7 +302,7 @@
 <script>
     // Mapping of States to Districts
     const stateToDistricts = {
-        "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", "Badaun", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Ghazipur", "Ghaziabad", "Gorakhpur", "Hamirpur", "Hapur", "Hathras", "Jhansi", "Jalaun", "Jansik", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Prayagraj", "Rampur", "Saharanpur", "Sambhal", "Saranpur", "Sant Kabir Nagar", "Shahjahanpur", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi" ],
+        "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", "Badaun", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Ghazipur", "Ghaziabad", "Gorakhpur","Gonda", "Hamirpur", "Hapur", "Hathras", "Jhansi", "Jalaun", "Jansik", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Prayagraj", "Rampur", "Saharanpur", "Sambhal", "Saranpur", "Sant Kabir Nagar", "Shahjahanpur", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi" ],
 
         "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Ujjain", "Jabalpur", "Sagar", "Dewas", "Ratlam", "Rewa", "Satna"],
         "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Purnia", "Darbhanga", "Begusarai", "Arrah", "Katihar", "Munger"],
@@ -374,12 +379,11 @@
 
   </script>
   
-  <script>
-    $(document).ready(function() {
-        $('#payNowBtn').click(function() {
-            $('#qrContainer').toggle();
-        });
-    });
+<script>
+    $.ajaxSetup({
+    headers: { "X-CSRFToken": "{{ csrf_token }}" }
+});
+
 </script>
 
 

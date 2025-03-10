@@ -54,6 +54,51 @@
         position: relative;
         width: 100%;
     }
+     /* Custom Styling */
+     .custom-card {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 20px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .custom-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .custom-card h3 {
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .custom-card p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        text-align: justify;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .custom-card {
+            padding: 20px;
+            font-size: 1rem;
+        }
+        
+        .custom-card h3 {
+            font-size: 1.5rem;
+        }
+
+        .custom-card p {
+            font-size: 1rem;
+        }
+    }
     .marquee-container {
         background: #f8d7da;
         color: #721c24;
@@ -179,32 +224,16 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a  href="#">
-                  <i class="fas fa-sticky-note"></i>
-                  <p>Self Declaration Form</p>
+                <a  href="{% url 'submit_blood_donation' %}">
+                  <i class="fas fa-tint blood-donation-icon"></i>
+                  <p>Donate Blood</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#tables">
-                  <i class="fas fa-tint blood-donation-icon"></i>
- <!-- Blood Donation Icon -->
-                  <p>Blood Donation</p>
-                  <span class="caret"></span>
+                <a  href="{% url 'blood_donation_list' %}">
+                  <i class="fas fa-sticky-note"></i>
+                  <p>View Donations</p>
                 </a>
-                <div class="collapse" id="tables">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="{% url 'submit_blood_donation' %}">
-                        <span class="sub-item">Donate Blood</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{% url 'blood_donation_list' %}">
-                        <span class="sub-item">View Donations</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
               </li>
             </ul>
           </div>
@@ -366,6 +395,24 @@
               </div>
               
             </div>
+            <div class="container mt-4">
+              <div class="row justify-content-center">
+                  <div class="col-lg-10 col-md-12">
+                      <div class="custom-card">
+                          <h3>🌟 पारस्परिक सहयोग भावना परस्पर सहयोग करें 🌟</h3>
+                          <p>
+                              जब अचानक किसी परिवार में कमाने वाले सदस्य का निधन हो जाता है तो उसके परिजनों के सामने घोर आर्थिक संकट उत्पन्न हो जाता है।
+                              विशेषकर उन नौकरीपेशा परिवारों के सामने जिनके पास वेतन के अतिरिक्त आय का कोई अन्य साधन उपलब्ध नहीं होता है। 
+                              ऐसी स्थिति से निपटने के लिए मार्गदाता ट्रस्ट सकारात्मक भूमिका निभा रहा है।
+                          </p>
+                          <p>
+                              <b>🚀 मार्गदाता ट्रस्ट</b> "सबका सहयोग, सबके लिए सहयोग, सबके द्वारा सहयोग" की पारस्परिक सहयोग भावना के तहत 
+                              इन विषम परिस्थितियों में अपने सदस्यों को आर्थिक सहयोग हेतु प्रेरित कर प्रभावित परिवार की आर्थिक सहयोग की अपील करता है।
+                          </p>
+                      </div>
+                  </div>
+              </div>
+          </div>
            </div>
         </div>
 

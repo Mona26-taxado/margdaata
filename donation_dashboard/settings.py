@@ -25,12 +25,12 @@ SECRET_KEY = 'django-insecure-b!htcm#y^!igc!_7+y*qpeg&dwqmp0rrrg#y6c5l%@-c@-9a*m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
-CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
-CSRF_COOKIE_SECURE = True
+# ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
+# CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
+# CSRF_COOKIE_SECURE = True
 
 
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -127,9 +127,35 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'donations.CustomUser'
 
 AUTHENTICATION_BACKENDS = [
-    "donations.views.EmailBackend",  # ✅ Custom email login
+    "donations.views.CustomAuthBackend",  # ✅ Custom authentication backend
     "django.contrib.auth.backends.ModelBackend",  # ✅ Default Django admin login
+    
 ]
+
+
+
+
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "debug.log",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
+
 
 
 # Internationalization
@@ -179,3 +205,10 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'margdatatrust2025@gmail.com'  # Replace with your admin email
 EMAIL_HOST_PASSWORD = 'gfsk zxli lmkv gygp'  # Use App Password if 2FA is enabled
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+
+
+
+
+

@@ -158,7 +158,7 @@
 
         <button type="submit" class="btn btn-custom"><i class="fa fa-sign-in-alt"></i> Login</button>
         
-        <a href="#" class="forgot-password"><i class="fa fa-key"></i> Forgot Password?</a>
+        <a href="{% url 'user_password_reset' %}" class="forgot-password"><i class="fa fa-key"></i> Forgot Password?</a>
         <a href="{% url 'register_customer' %}" class="register-link"><i class="fa fa-user-plus"></i> Register Now</a>
     </form>
 </div>

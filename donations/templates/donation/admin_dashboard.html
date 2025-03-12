@@ -139,42 +139,22 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#tables">
+                <a  href="{% url 'blood_donation_list' %}">
                   <i class="fas fa-tint blood-donation-icon"></i>
- <!-- Blood Donation Icon -->
-                  <p>Blood Donation</p>
-                  <span class="caret"></span>
+                  <p>View Donation List</p>
                 </a>
-                <div class="collapse" id="tables">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="{% url 'blood_donation_list' %}">
-                        <span class="sub-item">View Donations</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
               </li>
               <li class="nav-item">
-                <a data-bs-toggle="collapse" href="#notification">
+                <a  href="{% url 'send_notification' %}">
                   <i class="fas fa-bell notification-icon"></i> <!-- Notification Bell Icon -->
-                  <p>Notification</p>
-                  <span class="caret"></span>
+                  <p>Send Notification</p>
                 </a>
-                <div class="collapse" id="notification">
-                  <ul class="nav nav-collapse">
-                    <li>
-                      <a href="{% url 'send_notification' %}">
-                        <span class="sub-item">Send Notification</span>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{% url 'manage_notifications' %}">
-                        <span class="sub-item">Manage Notifications</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
+              </li>
+              <li class="nav-item">
+                <a  href="{% url 'manage_notifications' %}">
+                  <i class="fas fa-list"></i> <!-- Notification Bell Icon -->
+                  <p>Manage Notifications</p>
+                </a>
               </li>
             </ul>
           </div>

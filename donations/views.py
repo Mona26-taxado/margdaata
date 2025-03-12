@@ -32,22 +32,14 @@ from django.contrib.auth import get_user_model
 import os
 
 
-
-
-
-
+from django.shortcuts import render
+from django.db.models import Sum
 
 def admin_dashboard(request):
-    total_users = CustomUser.objects.filter(is_active=True).count()
+    total_users = CustomUser.objects.count()
     total_sahyog = Sahyog.objects.count()
     total_blood_donors = BloodDonation.objects.count()
-    total_vyawastha_shulk = VyawasthaShulkReceipt.objects.count()
-
-    # Debugging: Print values in console
-    print("DEBUG - Total Users:", total_users)
-    print("DEBUG - Total Sahyog:", total_sahyog)
-    print("DEBUG - Total Blood Donors:", total_blood_donors)
-    print("DEBUG - Total Vyawastha Shulk:", total_vyawastha_shulk)
+    total_vyawastha_shulk = VyawasthaShulkReceipt.objects.aggregate(total=Sum('amount'))['total'] or 0
 
     context = {
         "total_users": total_users,
@@ -57,7 +49,6 @@ def admin_dashboard(request):
     }
 
     return render(request, "donation/admin_dashboard.html", context)
-
 
 
 
@@ -214,7 +205,17 @@ def approve_user(request, user_id):
     customer.approved = True
     customer.save()
 
+    # ✅ Send Approval Email Notification
+    send_mail(
+        'Your Account Has Been Approved',
+        f'Hello {user.username},\n\nYour account has been successfully approved. You can now log in and access your services.\n\nBest Regards,\nMargdata Team',
+        settings.EMAIL_HOST_USER,
+        [user.email],  # Send to the user's registered email
+        fail_silently=False,
+    )
+
     return redirect("manage_members")
+
 
 
 
@@ -224,25 +225,30 @@ def approve_user(request, user_id):
 from django.urls import reverse
 
 
-@login_required
 def reject_user(request, user_id):
     if request.method == "POST":
-        # ✅ Check if user exists
-        user = CustomUser.objects.filter(id=user_id).first()
-        if not user:
+        try:
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
             messages.error(request, "❌ User not found or already deleted.")
-            return redirect(reverse("manage_members"))  # Redirect to members page
+            return redirect(reverse("manage_members"))
 
         user_email = user.email  # Save email before deleting
-        user.delete()
+        user.delete()  # ✅ Completely remove user
 
-        # ✅ Store success message for Bootstrap alert
-        messages.success(request, f"❌ User {user_email} has been rejected and removed.")
+        # ✅ Send rejection email
+        send_mail(
+            "Your Registration Request is Rejected",
+            f"Hello,\n\nUnfortunately, your registration request has been rejected and removed from our system.\nFor more information, please contact support.\n\nBest Regards,\nMargdata Team",
+            settings.EMAIL_HOST_USER,
+            [user_email],
+            fail_silently=False,
+        )
 
-        return redirect(reverse("manage_members"))  # Redirect to members page
+        messages.success(request, f"❌ User {user_email} has been rejected and deleted.")
+    
+    return redirect(reverse("manage_members"))  # Redirect back to admin panel
 
-    messages.error(request, "Invalid request method.")
-    return redirect(reverse("manage_members"))
 
 
 
@@ -251,16 +257,26 @@ from django.contrib.auth.backends import ModelBackend
 
 
 # ✅ Custom authentication backend that supports both email and username
-class EmailBackend(ModelBackend):
+class CustomAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            # ✅ Allow both email and admin username login
-            user = CustomUser.objects.get(email=username) if "@" in username else CustomUser.objects.get(username=username)
-
-            if user.check_password(password):
-                return user
-        except CustomUser.DoesNotExist:
+        # ✅ Prevents crashes by returning None for missing credentials
+        if username is None or password is None:
             return None
+
+        try:
+            if "@" in username:
+                user = CustomUser.objects.get(email=username)
+            else:
+                user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            return None  # ✅ User not found, return None
+
+        # ✅ Ensures password verification is correct
+        if user and user.check_password(password):
+            return user
+
+        return None
+
 
 # ✅ Login View (Supports Both Admin & User Login)
 def custom_admin_login(request):
@@ -344,7 +360,7 @@ def generate_payment_receipt(request, customer_id):
 
 # ✅ Admin Dashboard (Only for Custom Admin)
 @login_required
-def admin_dashboard(request):
+def custom_admin_dashboard(request):
     if request.user.role != "admin":
         return redirect('user_dashboard')  # If user is not admin, redirect to user dashboard
     return render(request, "donation/admin_dashboard.html")
@@ -411,10 +427,17 @@ def view_members(request):
             mobile__icontains=search_query
         )
 
+    approved_users = approved_users.order_by("-created_at")  # ✅ Order by newest first
+
     # Pagination (10 users per page)
     paginator = Paginator(approved_users, 10)  # Show 10 records per page
     page_number = request.GET.get('page')
     approved_users = paginator.get_page(page_number)
+
+    # ✅ Add Serial Number Based on Page Number
+    start_index = approved_users.start_index()  # Get the first index of current page
+    for index, user in enumerate(approved_users, start=start_index):
+        user.serial_number = index  # Assigning serial number
 
     # Check if user is admin or normal user
     if request.user.is_staff:  
@@ -455,8 +478,9 @@ def delete_member(request, user_id):
 
 
 def user_view_members(request):
-    approved_users = Customer.objects.filter(approved=True)
+    approved_users = Customer.objects.filter(approved=True).order_by("-created_at")  # ✅ Order by newest first
     return render(request, "donation/user_view_members.html", {"approved_users": approved_users})
+
 
 
 
@@ -596,8 +620,11 @@ def is_custom_admin(user):
 
 
 
+User = get_user_model()  # ✅ This ensures it fetches `CustomUser`
+
 def send_notification(request):
-    users = User.objects.all()  # Get all users to show in dropdown
+    users = User.objects.all()  # ✅ Now using CustomUser instead of auth.User
+    
     if request.method == "POST":
         form = NotificationForm(request.POST)
         if form.is_valid():
@@ -615,6 +642,7 @@ def send_notification(request):
         form = NotificationForm()
 
     return render(request, "donation/send_notification.html", {"form": form, "users": users})
+
 
 
 
@@ -876,3 +904,56 @@ def add_wrapped_text(page, label, value, position, max_width=120, line_spacing=8
 
 
 
+import smtplib
+from email.mime.text import MIMEText
+
+def send_approval_email(user_email, username):
+    sender_email = "margdatatrust2025@gmail.com"
+    sender_password = "gfsk zxli lmkv gygp"
+
+    subject = "Your ID is Activated"
+    body = f"Hello {username},\n\nYour ID has been approved and is now active. You can log in and use our services.\n\nBest Regards,\nMargdata Team"
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = sender_email
+    msg["To"] = user_email
+
+    try:
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)  # Change SMTP settings if needed
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, user_email, msg.as_string())
+        server.quit()
+        print("Approval email sent successfully!")
+    except Exception as e:
+        print("Error sending email:", e)
+
+
+
+from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
+from django.contrib.auth.forms import SetPasswordForm
+from django.urls import reverse_lazy
+from django.contrib.auth import update_session_auth_hash
+
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = "donation/user_password_reset.html"
+    email_template_name = "donation/password_reset_email.html"
+    subject_template_name = "donation/password_reset_subject.txt"
+    success_url = reverse_lazy("user_password_reset_done")
+
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = "donation/user_password_reset_confirm.html"
+    success_url = reverse_lazy("user_password_reset_complete")
+    form_class = SetPasswordForm
+
+    def form_valid(self, form):
+        user = form.save(commit=False)  # Get user instance
+        raw_password = form.cleaned_data["new_password1"]  # Capture new password
+        user.set_password(raw_password)  # Hash and set password
+        user.save()  # Force save
+        update_session_auth_hash(self.request, user)  # Keep session active
+        print(f"Password changed successfully for {user.email}")  # Debugging print
+        return super().form_valid(form)

@@ -112,8 +112,16 @@ def register_customer(request):
             department = request.POST.get("department")  # ✅ Get Department
             post = request.POST.get("post")  # ✅ Get Post
             home_address = request.POST.get("home_address")  # ✅ Get Home Address
+            # ✅ GET THESE TWO FIELDS TOO!
+            disease = request.POST.get("disease")
+            cause_of_illness = request.POST.get("cause_of_illness")
 
-            if not name or not email or not password or not mobile or not dob or not aadhar or not payment_slip or not transaction_id or not posting_state or not posting_district or not department or not post or not home_address:
+            # Make sure they're in your "all fields required" check if needed
+                # Handle as you see fit or remove from "required" if optional
+
+            # (The rest of your checks and code remain unchanged)
+
+            if not name or not email or not password or not mobile or not dob or not disease or not cause_of_illness or not aadhar or not payment_slip or not transaction_id or not posting_state or not posting_district or not department or not post or not home_address:
                 messages.error(request, "All fields are required.")
                 return redirect("register_customer")  
 
@@ -142,7 +150,9 @@ def register_customer(request):
                 posting_district=posting_district,  # ✅ Save Posting District
                 department=department,  # ✅ Save Department
                 post=post,  # ✅ Save Post
-                home_address=home_address  # ✅ Save Home Address
+                home_address=home_address,  # ✅ Save Home Address
+                disease=disease,                # <-- store it
+                cause_of_illness=cause_of_illness,  # <-- store it
             )
 
             # ✅ Send Email with Payment Slip & Transaction ID
@@ -692,8 +702,35 @@ def user_dashboard(request):
 
 
 def user_profile(request):
-    customer = get_object_or_404(Customer, user=request.user)  # ✅ Get logged-in user profile
-    return render(request, "donation/user_profile.html", {"customer": customer})  # ✅ Send all details
+    customer = get_object_or_404(Customer, user=request.user)
+
+    if request.method == "POST":
+        # Retrieve each field from request.POST
+        customer.name = request.POST.get("name")
+        customer.mobile = request.POST.get("mobile")
+        customer.email = request.POST.get("email")
+        customer.dob = request.POST.get("dob")
+        customer.aadhar = request.POST.get("aadhar")
+        customer.home_address = request.POST.get("home_address")
+        customer.department = request.POST.get("department")
+        customer.post = request.POST.get("post")
+        customer.posting_state = request.POST.get("posting_state")
+        customer.posting_district = request.POST.get("posting_district")
+        customer.disease = request.POST.get("disease")
+        customer.cause_of_illness = request.POST.get("cause_of_illness")
+
+        # Nominee fields as well
+        customer.first_nominee_name = request.POST.get("first_nominee_name")
+        customer.first_nominee_relation = request.POST.get("first_nominee_relation")
+        customer.first_nominee_mobile = request.POST.get("first_nominee_mobile")
+
+        # Finally save
+        customer.save()
+        messages.success(request, "Profile updated successfully.")
+        return redirect("user_profile")  # refreshes the page
+
+    # GET request just shows the form
+    return render(request, "donation/user_profile.html", {"customer": customer})
 
 
 

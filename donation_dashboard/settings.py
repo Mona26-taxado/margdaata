@@ -25,8 +25,13 @@ SECRET_KEY = 'django-insecure-b!htcm#y^!igc!_7+y*qpeg&dwqmp0rrrg#y6c5l%@-c@-9a*m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["147.93.18.188", "localhost", "dashboard.margdata.in"]
-CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in"]
+ALLOWED_HOSTS = [
+    "147.93.18.188",
+    "localhost",
+    "127.0.0.1",
+    "dashboard.margdata.in"
+]
+CSRF_TRUSTED_ORIGINS = ["https://dashboard.margdata.in", "http://127.0.0.1:8000"]
 CSRF_COOKIE_SECURE = True
 
 
@@ -41,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Add the sites framework
     'donations',  # Add your new app here
 ]
 
@@ -205,6 +211,17 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'margdatatrust2025@gmail.com'  # Replace with your admin email
 EMAIL_HOST_PASSWORD = 'gfsk zxli lmkv gygp'  # Use App Password if 2FA is enabled
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Site Framework Settings
+SITE_ID = 1
+
+# For development
+if DEBUG:
+    SITE_DOMAIN = '127.0.0.1:8000'
+    SITE_NAME = 'Margdata Dashboard Development'
+else:
+    SITE_DOMAIN = 'dashboard.margdata.in'
+    SITE_NAME = 'Margdata Dashboard'
 
 
 

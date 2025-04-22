@@ -971,14 +971,55 @@ from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetVie
 from django.contrib.auth.forms import SetPasswordForm
 from django.urls import reverse_lazy
 from django.contrib.auth import update_session_auth_hash
+import logging
 
-
+logger = logging.getLogger(__name__)
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = "donation/user_password_reset.html"
     email_template_name = "donation/password_reset_email.html"
     subject_template_name = "donation/password_reset_subject.txt"
     success_url = reverse_lazy("user_password_reset_done")
+    from_email = settings.EMAIL_HOST_USER
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['domain'] = settings.SITE_DOMAIN
+        context['protocol'] = 'https' if not settings.DEBUG else 'http'
+        context['title'] = 'Password Reset'
+        return context
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        logger.info(f"Password reset requested for email: {email}")
+        
+        try:
+            user = CustomUser.objects.get(email=email)
+            logger.info(f"User found with email: {email}")
+            
+            extra_context = {
+                'domain': settings.SITE_DOMAIN,
+                'protocol': 'https' if not settings.DEBUG else 'http',
+                'email': email,
+            }
+            
+            try:
+                form.save(
+                    request=self.request,
+                    from_email=self.from_email,
+                    email_template_name=self.email_template_name,
+                    subject_template_name=self.subject_template_name,
+                    extra_email_context=extra_context
+                )
+                logger.info(f"Password reset email sent successfully to {email}")
+                return super().form_valid(form)
+            except Exception as e:
+                logger.error(f"Error sending password reset email to {email}: {str(e)}")
+                raise
+                
+        except CustomUser.DoesNotExist:
+            logger.warning(f"No user found with email: {email}")
+            return super().form_valid(form)
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):

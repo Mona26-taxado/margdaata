@@ -169,7 +169,7 @@ LOGGING = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -215,13 +215,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Site Framework Settings
 SITE_ID = 1
 
-# For development
-if DEBUG:
-    SITE_DOMAIN = '127.0.0.1:8000'
-    SITE_NAME = 'Margdata Dashboard Development'
-else:
-    SITE_DOMAIN = 'dashboard.margdata.in'
-    SITE_NAME = 'Margdata Dashboard'
+SITE_DOMAIN = 'dashboard.margdata.in'
+SITE_NAME = 'Margdata Dashboard'
 
 
 

@@ -157,6 +157,37 @@
                 padding: 25px;
             }
         }
+
+        .install-app-btn {
+            margin: 14px auto 0 auto;
+            display: block;
+            background: linear-gradient(90deg, #27ae60 0%, #219150 100%);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 0;
+            width: 100%;
+            max-width: 350px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.08);
+            transition: background 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .install-app-btn:hover, .install-app-btn:focus {
+            background: linear-gradient(90deg, #1f9d55 0%, #1b7d45 100%);
+            transform: scale(1.03);
+            outline: none;
+        }
+
+        @media (max-width: 480px) {
+            .install-app-btn {
+                font-size: 1rem;
+                padding: 12px 0;
+                max-width: 98vw;
+            }
+        }
     </style>
 </head>
 <body>
@@ -169,12 +200,10 @@
         {% csrf_token %}
 
         <div class="mt-3">
-            <label class="form-label"><i class="fa fa-envelope"></i> Email</label>
             <input type="email" name="username" class="form-control" placeholder="Enter your email" required>
         </div>
 
         <div class="mt-3 position-relative">
-            <label class="form-label"><i class="fa fa-lock"></i> Password</label>
             <div class="input-group">
                 <input type="password" name="password" id="password" class="form-control shadow-sm"
                     placeholder="Enter your password" required>
@@ -189,6 +218,11 @@
         <a href="{% url 'user_password_reset' %}" class="forgot-password"><i class="fa fa-key"></i> Forgot Password?</a>
         <a href="{% url 'register_customer' %}" class="register-link"><i class="fa fa-user-plus"></i> Register Now</a>
     </form>
+
+    <!-- Responsive Install App Button -->
+    <button id="installAppBtn" class="install-app-btn" style="display:none;">
+        <i class="fa fa-download"></i> Install App
+    </button>
 </div>
 
 <script>
@@ -204,6 +238,23 @@
             passwordField.type = "password";
             icon.classList.remove("fa-eye");
             icon.classList.add("fa-eye-slash");
+        }
+    });
+
+    // Responsive Install App Button logic
+    let deferredPrompt;
+    const installAppBtn = document.getElementById('installAppBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installAppBtn.style.display = 'block';
+    });
+    installAppBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            installAppBtn.style.display = 'none';
         }
     });
 </script>

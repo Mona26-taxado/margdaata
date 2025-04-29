@@ -2,8 +2,9 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from .views import register_customer, manage_members, edit_member, user_view_members,user_logout, delete_member, add_member, submit_blood_donation, blood_donation_list, update_blood_donation_status, view_members
-from .views import approve_user, login_view,  admin_dashboard, user_dashboard, reject_user, generate_id_card, CustomPasswordResetView, CustomPasswordResetConfirmView
+from .views import approve_user, login_view,  admin_dashboard, user_dashboard, reject_user, generate_id_card, CustomPasswordResetView, CustomPasswordResetConfirmView, upi_qr
 from .views import generate_payment_receipt, running_sahyog, sahyog_list, edit_sahyog, delete_sahyog, send_notification, manage_notifications, delete_notification
 from django.conf.urls.static import static
 from .views import user_profile, upload_receipt, user_receipts, admin_receipts, upload_vyawastha_shulk, user_vyawastha_shulk_receipts, admin_vyawastha_shulk_receipts
@@ -66,11 +67,18 @@ urlpatterns = [
     path("user/password_reset/done/", auth_views.PasswordResetDoneView.as_view(template_name="donation/user_password_reset_done.html"), name="user_password_reset_done"),
     path("user/reset/<uidb64>/<token>/", CustomPasswordResetConfirmView.as_view(), name="user_password_reset_confirm"),
     path("user/reset/done/", auth_views.PasswordResetCompleteView.as_view(template_name="donation/user_password_reset_complete.html"), name="user_password_reset_complete"),
+    
     # 🔹 Admin Password Reset URLs
-    path("admin/password_reset/", auth_views.PasswordResetView.as_view(template_name="donation/admin_password_reset.html"), name="admin_password_reset"),
+    path("admin/password_reset/", auth_views.PasswordResetView.as_view(
+        template_name="donation/admin_password_reset.html",
+        email_template_name="donation/admin_password_reset_email.html",
+        subject_template_name="donation/admin_password_reset_subject.txt",
+        success_url=reverse_lazy("admin_password_reset_done")
+    ), name="admin_password_reset"),
     path("admin/password_reset/done/", auth_views.PasswordResetDoneView.as_view(template_name="donation/admin_password_reset_done.html"), name="admin_password_reset_done"),
     path("admin/reset/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(template_name="donation/admin_password_reset_confirm.html"), name="admin_password_reset_confirm"),
-    path("admin/reset/done/", auth_views.PasswordResetCompleteView.as_view(template_name="donation/admin_password_reset_complete.html"), name="admin_password_reset_complete"), 
+    path("admin/reset/done/", auth_views.PasswordResetCompleteView.as_view(template_name="donation/admin_password_reset_complete.html"), name="admin_password_reset_complete"),
+    path("upi-qr/", upi_qr, name="upi_qr"),
 ]
 
 

@@ -108,24 +108,18 @@
 {% endif %}
 {% load static %}
 
-<div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
-    <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
-    <img src="{% static 'assets/img/QR.jpg' %}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
-    <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
-    <h6 class="text-danger font-weight-bold">(सर्वप्रथम कृपया 50₹ वार्षिक व्यवस्था सहयोग राशि ट्रस्ट को दान कर सहयोग करें।)
-    </h6>
-</div>
+        
 
         <div class="row mt-3">
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-user"></i> Full Name *</label>
                 <input type="text" name="name" class="form-control" required>
-                <div class="invalid-feedback">Please enter your full name.</div>
+                <div class="text-danger"></div>
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-envelope"></i> Email * (for login)</label>
                 <input type="email" name="email" class="form-control" required>
-                <div class="invalid-feedback">Please enter your full Email.</div>
+                <div class="text-danger"></div>
             </div>
         </div>
 
@@ -133,12 +127,12 @@
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-phone"></i> Mobile *</label>
                 <input type="tel" name="mobile" class="form-control" required>
-                <div class="invalid-feedback">Please enter your full Mobile.</div>
+                <div class="text-danger"></div>
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-secure"></i> Password</label>
                 <input type="text" name="password" class="form-control">
-                <div class="invalid-feedback">Please enter your Password</div>
+                <div class="text-danger"></div>
             </div>
         </div>
 
@@ -148,14 +142,6 @@
     <input type="date" class="form-control" name="dob" required>
             </div>
             <div class="col-md-6">
-                <label for="Aadhaar" class="form-label"><i class="fa fa-id-card"></i> Aaddhar Number *</label>
-                <input type="text" name="aadhar" id="Aadhaar" class="form-control" placeholder="Enter Aadhaar" required>
-                <div class="invalid-feedback">Please enter your Home Aadhaar</div>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-venus-mars"></i> Gender *</label>
                 <select name="gender" class="form-control">
                     <option value="" selected disabled>Select Gender</option>
@@ -163,28 +149,6 @@
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                 </select>
-                
-            </div>
-            <div class="col-md-6">
-                <label class="form-label"><i class="fa fa-home"></i> Home District *</label>
-                <input type="text" name="home_district" class="form-control" required>
-                <div class="invalid-feedback">Please select your date of Home District</div>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <label class="form-label"><i class="fa fa-hospital"></i> Disease</label>
-                <select id="diseaseSelect" name="disease" class="form-control required" required>
-                    <option value="" selected disabled>Select Yes or No</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
-                <div class="invalid-feedback">Please select if you have a disease.</div>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label"><i class="fa fa-exclamation-circle"></i> Name of Disease</label>
-                <textarea name="cause_of_illness" class="form-control" rows="2"></textarea>
             </div>
         </div>
 
@@ -196,90 +160,20 @@
         <div class="row mt-3">
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-building"></i> Department *</label>
-                <select name="department" class="form-control" required>
+                <select name="department" id="department" class="form-control" required>
                     <option value="" selected disabled>Select Department</option>
-                    <option value="Central Department - Railways, Postal, Airforce">Central Department - Railways, Postal, Airforce"</option>
-                    <option value="Government Employees/Officers of Central Departments">Government Employees/Officers of State Departments</option>
-                    <option value="Contract Employees/Officers of Departments">Contract Employees/Officers of Departments</option>
-                    <option value="Kendriya Vidyalaya Teachers & Non-Teaching Staff">Kendriya Vidyalaya Teachers & Non-Teaching Staff</option>
-                    <option value="Technical Education Teachers & Non-Teaching Staff">Technical Education Teachers & Non-Teaching Staff</option>
-                    <option value="All Teachers in Government/Private Jobs">All Teachers in Government/Private Jobs</option>
-                    <option value="other">Other</option>
+                    <option value="Government">Government</option>
+                    <option value="Private">Private</option>
                 </select>
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-suitcase"></i> Post *</label>
-                <select name="post" class="form-control" required>
+                <select name="post" id="post" class="form-control" required>
                     <option value="" selected disabled>Select Post</option>
-                    <option value="Clerk">Clerk</option>
-                    <option value="Peon">Peon</option>
-                    <option value="Principal">Principal</option>
-                    <option value="Director">Director</option>
-                    <option value="Professor">Professor</option>
-                    <option value="Nurse">Nurse</option>
-                    <option value="Compounder">Compounder</option>
-                    <option value="Doctor">Doctor</option>
-                    <option value="Engineer">Engineer</option>
-                    <option value="other">Other</option>
                 </select>
             </div>
-        </div>
-        <div class="row mt-3">
-            <!-- State Dropdown -->
-<div class="col-md-6">
-    <label class="form-label"><i class="fa fa-map"></i> Posting State *</label>
-    <select id="state" name="posting_state" class="form-control" required>
-        <option value="" selected disabled>Select State</option>
-                    <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-                    <option value="Andhra Pradesh">Andhra Pradesh</option>
-                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                    <option value="Assam">Assam</option>
-                    <option value="Bihar">Bihar</option>
-                    <option value="Chandigarh">Chandigarh</option>
-                    <option value="Chhattisgarh">Chhattisgarh</option>
-                    <option value="Dadra and Nagar Haveli">Dadra and Nagar Haveli</option>
-                    <option value="Daman and Diu">Daman and Diu</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Goa">Goa</option>
-                    <option value="Gujarat">Gujarat</option>
-                    <option value="Haryana">Haryana</option>
-                    <option value="Himachal Pradesh">Himachal Pradesh</option>
-                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                    <option value="Jharkhand">Jharkhand</option>
-                    <option value="Karnataka">Karnataka</option>
-                    <option value="Kerala">Kerala</option>
-                    <option value="Ladakh">Ladakh</option>
-                    <option value="Lakshadweep">Lakshadweep</option>
-                    <option value="Madhya Pradesh">Madhya Pradesh</option>
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Manipur">Manipur</option>
-                    <option value="Meghalaya">Meghalaya</option>
-                    <option value="Mizoram">Mizoram</option>
-                    <option value="Nagaland">Nagaland</option>
-                    <option value="Odisha">Odisha</option>
-                    <option value="Puducherry">Puducherry</option>
-                    <option value="Punjab">Punjab</option>
-                    <option value="Rajasthan">Rajasthan</option>
-                    <option value="Sikkim">Sikkim</option>
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                    <option value="Telangana">Telangana</option>
-                    <option value="Tripura">Tripura</option>
-                    <option value="Uttar Pradesh">Uttar Pradesh</option>
-                    <option value="Uttarakhand">Uttarakhand</option>
-                    <option value="West Bengal">West Bengal</option>
-    </select>
 </div>
 
-<!-- District Dropdown -->
-<div class="col-md-6">
-    <label class="form-label"><i class="fa fa-map-pin"></i> Posting District *</label>
-    <select id="district" name="posting_district" class="form-control" required>
-        <option value="" selected disabled>Select District</option>
-    </select>
-</div>
-
-  </div>   
-  <!-- Existing form fields here -->
   <div class="row mt-3">
   <div class="col-md-6">
     <label class="form-label"><i class="fa fa-file-invoice"></i> Transaction ID *</label>
@@ -288,7 +182,20 @@
 <div class="col-md-6">
     <label class="form-label"><i class="fa fa-upload"></i> Upload Payment Slip *</label>
 <input type="file" name="payment_slip" class="form-control required">
-<div class="invalid-feedback">Please upload your payment slip.</div>
+<div class="text-danger"></div>
+</div>
+<!-- Move QR section here, above transaction fields -->
+<div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
+    <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
+    <div>
+        <img src="{% url 'upi_qr' %}" alt="Pay ₹50 to Margdata Trust UPI" style="max-width: 200px;" />
+    </div>
+    <a href="upi://pay?pa=margdatatrust@sbi&pn=Margdata%20Trust&am=50&cu=INR" class="btn btn-success mt-3" style="font-weight:bold;font-size:1.1rem;">
+        <i class="fa fa-mobile-alt"></i> Pay Now
+    </a>
+    <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
+    <h6 class="text-danger font-weight-bold">(सर्वप्रथम कृपया 50₹ वार्षिक व्यवस्था सहयोग राशि ट्रस्ट को दान कर सहयोग करें।)
+    </h6>
 </div>
 </div>
 
@@ -302,69 +209,14 @@
     </label>
 </div>
 
-
         <button type="submit" class="btn btn-custom w-100 mt-3"><i class="fa fa-paper-plane"></i> Register</button>
     </form>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Mapping of States to Districts
-    const stateToDistricts = {
-        "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", "Badaun", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Ghazipur", "Ghaziabad", "Gorakhpur","Gonda", "Hamirpur", "Hapur", "Hathras", "Jhansi", "Jalaun", "Jansik", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Prayagraj", "Rampur", "Saharanpur", "Sambhal", "Saranpur", "Sant Kabir Nagar", "Shahjahanpur", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi" ],
 
-        "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Ujjain", "Jabalpur", "Sagar", "Dewas", "Ratlam", "Rewa", "Satna"],
-        "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Purnia", "Darbhanga", "Begusarai", "Arrah", "Katihar", "Munger"],
-        "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Ajmer", "Bikaner", "Kota", "Alwar", "Bharatpur", "Sikar", "Pali"],
-        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad", "Solapur", "Amravati", "Nanded", "Kolhapur"],
-        "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar", "Bhavnagar", "Jamnagar", "Junagadh", "Anand", "Navsari"],
-        "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "South Delhi", "West Delhi", "North Delhi", "North East Delhi", "North West Delhi", "South West Delhi", "South East Delhi"],
-        "Haryana": ["Ambala", "Bhiwani", "Faridabad", "Fatehabad", "Gurgaon", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal"],
-        "Punjab": ["Amritsar", "Bathinda", "Faridkot", "Firozpur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa"],
-        "Uttarakhand": ["Dehradun", "Haridwar", "Nainital", "Almora", "Bageshwar", "Chamoli", "Champawat", "Pauri Garhwal", "Pithoragarh", "Rudraprayag"],
-        "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Bolangir"],
-        "Kerala": ["Thiruvananthapuram", "Kollam", "Kochi", "Kozhikode", "Thrissur", "Kannur", "Alappuzha", "Kottayam", "Palakkad", "Manjeri"],
-        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Tiruppur", "Salem", "Erode", "Tirunelveli", "Vellore", "Thoothukudi"],
-        "Telangana": ["Hyderabad", "Warangal", "Khammam", "Nizamabad", "Karimnagar", "Ramagundam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
-        "Sikkim": ["Gangtok", "Mangan", "Gyalshing", "Singtam", "Namchi", "Ravangla", "Rangpo", "Jorethang", "Naya Bazar", "Rhenock"],
-        "West Bengal": ["Kolkata", "Siliguri", "Asansol", "Durgapur", "Bardhaman", "Malda", "Baharampur", "Habra", "Kharagpur", "Shant Rukmini Nagar"],
 
-    };
 
-    document.getElementById("state").addEventListener("change", function () {
-        let selectedState = this.value;
-        let districtDropdown = document.getElementById("district");
-
-        // Clear previous options
-        districtDropdown.innerHTML = '<option value="" selected disabled>Select District</option>';
-
-        // Add new districts based on the selected state
-        if (selectedState in stateToDistricts) {
-            stateToDistricts[selectedState].forEach(district => {
-                let option = document.createElement("option");
-                option.value = district;
-                option.textContent = district;
-                districtDropdown.appendChild(option);
-            });
-        }
-    });
-</script>
-
-<script>
-    document.getElementById("diseaseSelect").addEventListener("change", function() {
-        let causeContainer = document.getElementById("causeContainer");
-        let causeInput = document.getElementById("causeOfIllness");
-
-        if (this.value === "Yes") {
-            causeContainer.style.display = "block"; // Show the textarea
-            causeInput.setAttribute("required", "required"); // Make it required
-        } else {
-            causeContainer.style.display = "none"; // Hide the textarea
-            causeInput.removeAttribute("required"); // Remove required attribute
-            causeInput.value = ""; // Clear the input value
-        }
-    });
-</script>
 <script>
   document.querySelector("form").addEventListener("submit", function (e) {
     let requiredFields = document.querySelectorAll("[required]");
@@ -395,7 +247,118 @@
 
 </script>
 
+<script>
+    // Post options for each department
+    const postOptions = {
+        Government: [
+            "Railway", "Health", "Panchayati Raj", "Irrigation department", "Jal Nigam", "Revenue", "Parivahan", , "Bal Vikas Evam Pustahar", "Electric", "Bank", "Police", "Homegaurd", "Others"
+        ],
+        Private: [
+            "Teacher", "Clerk", "Manager", "Peon", "Doctor", "Engineer", "Advocate", "Others"
+        ]
+    };
+    document.getElementById('department').addEventListener('change', function() {
+        const dept = this.value;
+        const postSelect = document.getElementById('post');
+        postSelect.innerHTML = '<option value="" selected disabled>Select Post</option>';
+        if (dept && postOptions[dept]) {
+            postOptions[dept].forEach(function(opt) {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                postSelect.appendChild(option);
+            });
+        }
+    });
+</script>
 
+<div id="ajax-error-message" class="alert alert-danger d-none" role="alert"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // CSRF token helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    var regForm = document.getElementById('registrationForm');
+    var ajaxErrorDiv = document.getElementById('ajax-error-message');
+    if (regForm) {
+        regForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            // Clear previous errors
+            document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
+            if (ajaxErrorDiv) {
+                ajaxErrorDiv.classList.add('d-none');
+                ajaxErrorDiv.innerHTML = '';
+            }
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => {
+                // Try to parse JSON, but handle non-JSON gracefully
+                return response.json().catch(() => {
+                    console.error('Non-JSON response:', response);
+                    throw new Error('Non-JSON response');
+                });
+            })
+            .then(data => {
+                console.log('AJAX response:', data);
+                if (data.success) {
+                    window.location.href = data.redirect_url;
+                } else if (data.errors) {
+                    // Show global errors (e.g., __all__) at the top
+                    if (data.errors.__all__) {
+                        if (ajaxErrorDiv) {
+                            ajaxErrorDiv.classList.remove('d-none');
+                            ajaxErrorDiv.innerHTML = data.errors.__all__.join('<br>');
+                        }
+                    }
+                    // Show field errors
+                    for (let field in data.errors) {
+                        if (field === '__all__') continue;
+                        let input = form.querySelector(`[name='${field}']`);
+                        if (input) {
+                            let errorDiv = input.parentElement.querySelector('.text-danger');
+                            if (errorDiv) {
+                                errorDiv.innerHTML = data.errors[field].join('<br>');
+                            }
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('AJAX error:', error);
+                if (ajaxErrorDiv) {
+                    ajaxErrorDiv.classList.remove('d-none');
+                    ajaxErrorDiv.innerHTML = 'An error occurred. Please try again or check the console for details.';
+                }
+            });
+        });
+    }
+});
+</script>
 
 </body>
 </html>

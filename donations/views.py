@@ -26,14 +26,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 import fitz  # PyMuPDF
 from django.http import FileResponse, HttpResponse
 from io import BytesIO
-
+import qrcode
 
 from django.contrib.auth import get_user_model
 import os
 
-
 from django.shortcuts import render
 from django.db.models import Sum
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.urls import reverse
 
 def admin_dashboard(request):
     total_users = CustomUser.objects.count()
@@ -49,10 +51,6 @@ def admin_dashboard(request):
     }
 
     return render(request, "donation/admin_dashboard.html", context)
-
-
-
-from django.db.models import Q
 
 CustomUser = get_user_model()
 
@@ -87,111 +85,82 @@ def login_view(request):
 
     return render(request, "donation/login.html")
 
-
-
-        
-
-
-
-
 from django.contrib import messages  # ✅ Import messages for Bootstrap alerts
 
 def register_customer(request):
     if request.method == "POST":
+        form = CustomerRegistrationForm(request.POST, request.FILES)
         try:
-            name = request.POST.get("name")
-            email = request.POST.get("email")
-            password = request.POST.get("password")  # ✅ Get Password from Form
-            mobile = request.POST.get("mobile")
-            dob = request.POST.get("dob")
-            aadhar = request.POST.get("aadhar")
-            payment_slip = request.FILES.get("payment_slip")
-            transaction_id = request.POST.get("transaction_id")  # ✅ Get Transaction ID
-            posting_state = request.POST.get("posting_state")  # ✅ Get Posting State
-            posting_district = request.POST.get("posting_district")  # ✅ Get Posting District
-            department = request.POST.get("department")  # ✅ Get Department
-            post = request.POST.get("post")  # ✅ Get Post
-            home_address = request.POST.get("home_address")  # ✅ Get Home Address
-            # ✅ GET THESE TWO FIELDS TOO!
-            disease = request.POST.get("disease")
-            cause_of_illness = request.POST.get("cause_of_illness")
+            if form.is_valid():
+                cleaned_data = form.cleaned_data
+                email = cleaned_data.get("email")
+                password = request.POST.get("password")  # Password is not in form, so get from POST
 
-            # Make sure they're in your "all fields required" check if needed
-                # Handle as you see fit or remove from "required" if optional
+                # Check for duplicate email
+                if CustomUser.objects.filter(email=email).exists():
+                    error_msg = "This email is already registered. Please use a different email or log in."
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'success': False, 'errors': {'email': [error_msg]}}, status=400)
+                    else:
+                        form.add_error('email', error_msg)
+                        return render(request, "donation/register.html", {"form": form})
 
-            # (The rest of your checks and code remain unchanged)
+                if not password:
+                    error_msg = "Password is required."
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'success': False, 'errors': {'password': [error_msg]}}, status=400)
+                    else:
+                        form.add_error(None, error_msg)
+                        return render(request, "donation/register.html", {"form": form})
 
-            if not name or not email or not password or not mobile or not dob or not disease or not cause_of_illness or not aadhar or not payment_slip or not transaction_id or not posting_state or not posting_district or not department or not post or not home_address:
-                messages.error(request, "All fields are required.")
-                return redirect("register_customer")  
+                user = CustomUser.objects.create(
+                    email=email,
+                    role="user",
+                    is_approved=False,
+                    is_active=False
+                )
+                user.set_password(password)
+                user.save()
 
-            # ✅ Save user
-            user = CustomUser.objects.create(
-                email=email,
-                role="user",
-                is_approved=False,
-                is_active=False
-            )
-            user.set_password(password)
-            user.save()
+                customer = form.save(commit=False)
+                customer.user = user
+                customer.approved = False
+                customer.save()
 
-            # ✅ Save Customer
-            customer = Customer.objects.create(
-                user=user,  
-                name=name,
-                email=email,
-                mobile=mobile,
-                dob=dob,
-                aadhar=aadhar,
-                approved=False,  
-                payment_slip=payment_slip,
-                transaction_id=transaction_id,  # ✅ Save transaction ID
-                posting_state=posting_state,  # ✅ Save Posting State
-                posting_district=posting_district,  # ✅ Save Posting District
-                department=department,  # ✅ Save Department
-                post=post,  # ✅ Save Post
-                home_address=home_address,  # ✅ Save Home Address
-                disease=disease,                # <-- store it
-                cause_of_illness=cause_of_illness,  # <-- store it
-            )
+                # Send notification email to admins
+                admin_emails = CustomUser.objects.filter(is_staff=True).values_list('email', flat=True)
+                if admin_emails:
+                    send_mail(
+                        'New Registration Request',
+                        f'A new registration request has been received from {customer.name} ({customer.email}).\n\n'
+                        f'Please review and approve/reject the request in the admin dashboard.\n\n'
+                        f'Details:\n'
+                        f'Name: {customer.name}\n'
+                        f'Email: {customer.email}\n'
+                        f'Mobile: {customer.mobile}\n'
+                        f'Transaction ID: {customer.transaction_id}\n'
+                        f'Registered On: {customer.created_at.strftime("%d-%m-%Y %H:%M")}',
+                        settings.EMAIL_HOST_USER,
+                        list(admin_emails),
+                        fail_silently=False,
+                    )
 
-            # ✅ Send Email with Payment Slip & Transaction ID
-            subject = "New User Registration - Payment Slip Attached"
-            message = f"""
-            A new user has registered.
-            
-            Name: {name}
-            Email: {email}
-            Mobile: {mobile}
-            Date of Birth: {dob}
-            Aadhar: {aadhar}
-            Transaction ID: {transaction_id}
-
-            Please review their registration details and approve their account.
-            """
-            admin_email = "your_admin_email@example.com"
-
-            email_message = EmailMessage(subject, message, to=[admin_email])
-            if customer.payment_slip:
-                payment_slip_path = customer.payment_slip.path
-                email_message.attach_file(payment_slip_path)
-
-            email_message.send()
-
-            messages.success(request, "Registration successful! Await admin approval.")
-            return redirect("registration_success")
-
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True, 'redirect_url': reverse('registration_success')})
+                messages.success(request, "Registration successful! Await admin approval.")
+                return redirect('registration_success')
+            else:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'errors': form.errors}, status=400)
         except Exception as e:
-            messages.error(request, f"Error: {str(e)}")
-            return redirect("register_customer")
-
-    return render(request, "donation/register.html")
-
-
-
-
-
-
+            logging.exception("Registration error")
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': {'__all__': [str(e)]}}, status=500)
+            else:
+                messages.error(request, f"Error: {str(e)}")
+    else:
+        form = CustomerRegistrationForm()
+    return render(request, "donation/register.html", {"form": form})
 
 @login_required
 def approve_user(request, user_id):
@@ -226,14 +195,7 @@ def approve_user(request, user_id):
 
     return redirect("manage_members")
 
-
-
-
-
-
-
 from django.urls import reverse
-
 
 def reject_user(request, user_id):
     if request.method == "POST":
@@ -259,12 +221,7 @@ def reject_user(request, user_id):
     
     return redirect(reverse("manage_members"))  # Redirect back to admin panel
 
-
-
-
-
 from django.contrib.auth.backends import ModelBackend
-
 
 # ✅ Custom authentication backend that supports both email and username
 class CustomAuthBackend(ModelBackend):
@@ -287,7 +244,6 @@ class CustomAuthBackend(ModelBackend):
 
         return None
 
-
 # ✅ Login View (Supports Both Admin & User Login)
 def custom_admin_login(request):
     if request.user.is_authenticated:
@@ -309,14 +265,6 @@ def custom_admin_login(request):
 
     return render(request, "donation/login.html")
 
-
-
-
-
-
-
-
-
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
@@ -325,12 +273,6 @@ def user_logout(request):
     if request.method == "POST" or request.method == "GET":  # Accept both methods
         logout(request)
         return redirect("login")  # Redirect to login page
-
-
-
-
-
-
 
 def generate_payment_receipt(request, customer_id):
     try:
@@ -365,9 +307,6 @@ def generate_payment_receipt(request, customer_id):
 
     return response
 
-
-
-
 # ✅ Admin Dashboard (Only for Custom Admin)
 @login_required
 def custom_admin_dashboard(request):
@@ -380,33 +319,65 @@ def custom_admin_dashboard(request):
 def user_dashboard(request):
     if request.user.is_staff:
         return HttpResponseForbidden("You are not allowed to access this page.")
-    return render(request, "donation/user_dashboard.html")
 
+    notifications = Notification.objects.filter(
+        Q(target_type="all_users") |
+        Q(target_type="specific_user", specific_user=request.user)
+    ).order_by('-created_at')
 
-
-
+    return render(request, 'donation/user_dashboard.html', {'notifications': notifications})
 
 def manage_members(request):
-    # ✅ Fetch both self-registered and admin-added members
+    # Get search query
+    search_query = request.GET.get('search', '')
+    
+    # Fetch approved users with search filter
     approved_users = Customer.objects.filter(approved=True)
+    if search_query:
+        approved_users = approved_users.filter(
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(mobile__icontains=search_query)
+        )
+    approved_users = approved_users.order_by("-created_at")
+    
+    # Fetch pending requests with search filter
     pending_requests = Customer.objects.filter(approved=False)
+    if search_query:
+        pending_requests = pending_requests.filter(
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(mobile__icontains=search_query)
+        )
+    pending_requests = pending_requests.order_by("-created_at")
 
-    # ✅ Include admin-added users who don't have a `Customer` record
-    admin_added_users = CustomUser.objects.filter(is_approved=True, is_staff=False).exclude(
-        id__in=approved_users.values_list('user_id', flat=True)
-    )
+    # Pagination for approved users (10 per page)
+    approved_paginator = Paginator(approved_users, 10)
+    approved_page_number = request.GET.get('approved_page', 1)
+    approved_page_obj = approved_paginator.get_page(approved_page_number)
+
+    # Add serial numbers for approved users
+    approved_start_index = (approved_page_obj.number - 1) * approved_paginator.per_page + 1
+    for index, user in enumerate(approved_page_obj, start=approved_start_index):
+        user.serial_number = index
+
+    # Pagination for pending requests (10 per page)
+    pending_paginator = Paginator(pending_requests, 10)
+    pending_page_number = request.GET.get('pending_page', 1)
+    pending_page_obj = pending_paginator.get_page(pending_page_number)
+
+    # Add serial numbers for pending requests
+    pending_start_index = (pending_page_obj.number - 1) * pending_paginator.per_page + 1
+    for index, user in enumerate(pending_page_obj, start=pending_start_index):
+        user.serial_number = index
 
     return render(request, "donation/manage_members.html", {
-        "approved_users": approved_users,
-        "pending_requests": pending_requests,
-        "admin_added_users": admin_added_users  # ✅ Now also includes admin-added users
+        "approved_users": approved_page_obj,
+        "pending_requests": pending_page_obj,
+        "search_query": search_query,
+        "approved_paginator": approved_paginator,
+        "pending_paginator": pending_paginator
     })
-
-
-
-
-
-
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
@@ -430,31 +401,38 @@ def view_members(request):
     # If search query exists, filter by name, email, or mobile
     if search_query:
         approved_users = approved_users.filter(
-            name__icontains=search_query
-        ) | approved_users.filter(
-            email__icontains=search_query
-        ) | approved_users.filter(
-            mobile__icontains=search_query
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(mobile__icontains=search_query)
         )
 
-    approved_users = approved_users.order_by("-created_at")  # ✅ Order by newest first
+    approved_users = approved_users.order_by("-created_at")  # Order by newest first
 
     # Pagination (10 users per page)
-    paginator = Paginator(approved_users, 10)  # Show 10 records per page
-    page_number = request.GET.get('page')
-    approved_users = paginator.get_page(page_number)
+    paginator = Paginator(approved_users, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
-    # ✅ Add Serial Number Based on Page Number
-    start_index = approved_users.start_index()  # Get the first index of current page
-    for index, user in enumerate(approved_users, start=start_index):
-        user.serial_number = index  # Assigning serial number
+    # Add serial numbers based on page number
+    start_index = (page_obj.number - 1) * paginator.per_page + 1
+    for index, user in enumerate(page_obj, start=start_index):
+        user.serial_number = index
 
     # Check if user is admin or normal user
     if request.user.is_staff:  
-        return render(request, "donation/view_members.html", {"approved_users": approved_users, "search_query": search_query})
+        return render(request, "donation/view_members.html", {
+            "approved_users": page_obj,
+            "search_query": search_query,
+            "paginator": paginator,
+            "page_obj": page_obj
+        })
     else:  
-        return render(request, "donation/user_view_members.html", {"approved_users": approved_users, "search_query": search_query})
-
+        return render(request, "donation/user_view_members.html", {
+            "approved_users": page_obj,
+            "search_query": search_query,
+            "paginator": paginator,
+            "page_obj": page_obj
+        })
 
 # Edit Member Details (Only for Admin)
 def edit_member(request, user_id):
@@ -485,14 +463,9 @@ def delete_member(request, user_id):
     messages.error(request, f"{member.name} has been removed!")
     return redirect("view_members")
 
-
-
 def user_view_members(request):
     approved_users = Customer.objects.filter(approved=True).order_by("-created_at")  # ✅ Order by newest first
     return render(request, "donation/user_view_members.html", {"approved_users": approved_users})
-
-
-
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)
@@ -545,13 +518,6 @@ def add_member(request):
 
     return render(request, 'donation/add_member.html', {'form': form})
 
-
-
-
-
-
-
-
 @login_required
 @user_passes_test(lambda u: u.is_staff)
 def running_sahyog(request):
@@ -576,8 +542,6 @@ def running_sahyog(request):
 
     return render(request, "donation/running_sahyog.html")
 
-
-
 # ✅ Restrict Editing to Custom Admins Only
 @login_required
 @user_passes_test(lambda u: u.is_staff)  # ✅ Only Custom Admin can access
@@ -594,7 +558,6 @@ def edit_sahyog(request, sahyog_id):
 
     return render(request, "donation/edit_sahyog.html", {"form": form, "sahyog": sahyog})
 
-
 # ✅ Restrict Deleting to Custom Admins Only
 @login_required
 @user_passes_test(lambda u: u.is_staff)  # Only admins can delete
@@ -602,8 +565,6 @@ def delete_sahyog(request, sahyog_id):
     sahyog = get_object_or_404(Sahyog, id=sahyog_id)
     sahyog.delete()
     return redirect('sahyog_list')
-
-
 
 def sahyog_list(request):
     sahyog_entries = Sahyog.objects.all()  # ✅ Get all Sahyog entries
@@ -616,47 +577,39 @@ def sahyog_list(request):
         "base_template": base_template
     })
 
-
-
-
-
-
-
 # Check if the user is a Custom Admin
 def is_custom_admin(user):
     return user.is_staff  # Modify if you have a separate admin role
 
-
-
-
-
 User = get_user_model()  # ✅ This ensures it fetches `CustomUser`
 
 def send_notification(request):
-    users = User.objects.all()  # ✅ Now using CustomUser instead of auth.User
-    
+    users = User.objects.all()
     if request.method == "POST":
         form = NotificationForm(request.POST)
         if form.is_valid():
             target_type = form.cleaned_data["target_type"]
-            specific_user = request.POST.get("specific_user")
+            specific_user_id = request.POST.get("specific_user")
 
-            if target_type == "specific_user" and not specific_user:
-                messages.error(request, "Please select a user.")
+            if target_type == "specific_user":
+                if not specific_user_id:
+                    messages.error(request, "Please select a user.")
+                else:
+                    notification = form.save(commit=False)
+                    notification.specific_user_id = specific_user_id
+                    notification.save()
+                    messages.success(request, "Notification sent successfully!")
+                    return redirect("send_notification")
             else:
-                form.save()
+                # For all users, clear specific_user
+                notification = form.save(commit=False)
+                notification.specific_user = None
+                notification.save()
                 messages.success(request, "Notification sent successfully!")
                 return redirect("send_notification")
-
     else:
         form = NotificationForm()
-
     return render(request, "donation/send_notification.html", {"form": form, "users": users})
-
-
-
-
-
 
 # ✅ View to display notifications for admin
 @login_required
@@ -665,42 +618,13 @@ def manage_notifications(request):
     notifications = Notification.objects.order_by("-created_at")  # Show latest notifications first
     return render(request, "donation/manage_notifications.html", {"notifications": notifications})
 
-
 @staff_member_required
 def delete_notification(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id)
     notification.delete()
     return redirect("manage_notifications")  # Redirect back to notifications list
 
-
-
-def user_dashboard(request):
-    notifications = Notification.objects.filter(is_active=True).order_by('-created_at')
-    return render(request, 'donation/user_dashboard.html', {'notifications': notifications})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from django.contrib.auth.decorators import login_required
-
 @login_required
-def user_dashboard(request):
-    return render(request, 'donation/user_dashboard.html', {'user': request.user})
-
-
 def user_profile(request):
     customer = get_object_or_404(Customer, user=request.user)
 
@@ -717,7 +641,6 @@ def user_profile(request):
         customer.posting_state = request.POST.get("posting_state")
         customer.posting_district = request.POST.get("posting_district")
         customer.disease = request.POST.get("disease")
-        customer.cause_of_illness = request.POST.get("cause_of_illness")
 
         # Nominee fields as well
         customer.first_nominee_name = request.POST.get("first_nominee_name")
@@ -731,10 +654,6 @@ def user_profile(request):
 
     # GET request just shows the form
     return render(request, "donation/user_profile.html", {"customer": customer})
-
-
-
-
 
 @login_required
 def upload_receipt(request):
@@ -752,22 +671,15 @@ def upload_receipt(request):
 
     return render(request, "donation/upload_receipt.html", {"form": form})
 
-
-
-
 @login_required
 def user_receipts(request):
     receipts = SahyogReceipt.objects.filter(user=request.user)
     return render(request, "donation/user_receipts.html", {"receipts": receipts})
-from django.contrib.admin.views.decorators import staff_member_required
 
 @staff_member_required
 def admin_receipts(request):
     receipts = SahyogReceipt.objects.all()
     return render(request, "donation/admin_receipts.html", {"receipts": receipts})
-
-
-
 
 @login_required
 def upload_vyawastha_shulk(request):
@@ -784,34 +696,15 @@ def upload_vyawastha_shulk(request):
 
     return render(request, "donation/upload_vyawastha_shulk.html", {"form": form})
 
-
-
 @login_required
 def user_vyawastha_shulk_receipts(request):
     receipts = VyawasthaShulkReceipt.objects.filter(user=request.user)
     return render(request, "donation/user_vyawastha_shulk_receipts.html", {"receipts": receipts})
 
-
-
-
-
 @staff_member_required
 def admin_vyawastha_shulk_receipts(request):
     receipts = VyawasthaShulkReceipt.objects.all()
     return render(request, "donation/admin_vyawastha_shulk_receipts.html", {"receipts": receipts})
-
-
-
-
-
-def user_dashboard(request):
-    notifications = Notification.objects.all()  # ✅ Fetch all notifications
-    return render(request, "donation/user_dashboard.html", {"notifications": notifications})
-
-
-
-
-
 
 @login_required
 def submit_blood_donation(request):
@@ -825,9 +718,6 @@ def submit_blood_donation(request):
     else:
         form = BloodDonationForm()
     return render(request, "donation/blood_donation_form.html", {"form": form})
-
-
-
 
 @login_required
 def blood_donation_list(request):
@@ -844,10 +734,6 @@ def blood_donation_list(request):
         "base_template": base_template
     })
 
-
-
-
-
 @staff_member_required
 def update_blood_donation_status(request, donation_id, status):
     donation = get_object_or_404(BloodDonation, id=donation_id)
@@ -855,18 +741,6 @@ def update_blood_donation_status(request, donation_id, status):
         donation.status = status
         donation.save()
     return redirect("blood_donation_list")
-
-
-
-
-
-
-
-import fitz  # PyMuPDF
-from django.http import FileResponse, HttpResponse
-from django.contrib.auth.decorators import login_required
-from io import BytesIO
-from .models import Customer
 
 @login_required
 def generate_id_card(request):
@@ -909,7 +783,6 @@ def generate_id_card(request):
 
     return FileResponse(buffer, as_attachment=True, filename="Margdata_ID_Card.pdf")
 
-
 # ✅ Improved Text Wrapping Function
 def add_wrapped_text(page, label, value, position, max_width=120, line_spacing=8):
     """Handles wrapping text if it exceeds max width."""
@@ -935,12 +808,6 @@ def add_wrapped_text(page, label, value, position, max_width=120, line_spacing=8
     # ✅ Insert the last line
     page.insert_text((position[0], position[1] + y_offset), current_line, fontsize=font_size, fontname=font_regular, color=text_color)
 
-
-
-
-
-
-
 import smtplib
 from email.mime.text import MIMEText
 
@@ -964,8 +831,6 @@ def send_approval_email(user_email, username):
         print("Approval email sent successfully!")
     except Exception as e:
         print("Error sending email:", e)
-
-
 
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.contrib.auth.forms import SetPasswordForm
@@ -1003,24 +868,21 @@ class CustomPasswordResetView(PasswordResetView):
                 'email': email,
             }
             
-            try:
-                form.save(
-                    request=self.request,
-                    from_email=self.from_email,
-                    email_template_name=self.email_template_name,
-                    subject_template_name=self.subject_template_name,
-                    extra_email_context=extra_context
-                )
-                logger.info(f"Password reset email sent successfully to {email}")
-                return super().form_valid(form)
-            except Exception as e:
-                logger.error(f"Error sending password reset email to {email}: {str(e)}")
-                raise
+            # Only send email if user exists
+            form.save(
+                request=self.request,
+                from_email=self.from_email,
+                email_template_name=self.email_template_name,
+                subject_template_name=self.subject_template_name,
+                extra_email_context=extra_context
+            )
+            logger.info(f"Password reset email sent successfully to {email}")
+            return super().form_valid(form)
                 
         except CustomUser.DoesNotExist:
             logger.warning(f"No user found with email: {email}")
+            # Still return success to prevent email enumeration
             return super().form_valid(form)
-
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = "donation/user_password_reset_confirm.html"
@@ -1035,3 +897,11 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
         update_session_auth_hash(self.request, user)  # Keep session active
         print(f"Password changed successfully for {user.email}")  # Debugging print
         return super().form_valid(form)
+
+def upi_qr(request):
+    upi_url = "upi://pay?pa=margdatatrust@sbi&pn=Margdata Trust&am=50&cu=INR"
+    img = qrcode.make(upi_url)
+    response = HttpResponse(content_type="image/png")
+    img.save(response, "PNG")
+    return response
+

@@ -1,4 +1,3 @@
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
@@ -54,7 +53,6 @@ class Customer(models.Model):
     dob = models.DateField(null=True)
     mobile = models.CharField(max_length=15, unique=True)
     mobile_home = models.CharField(max_length=15, blank=True, null=True)
-    aadhar = models.CharField(max_length=12, unique=True, blank=False, null=False)
 
     # ✅ Nominee Details
     first_nominee_name = models.CharField(max_length=255, null=True, blank=True)  # ✅ Exists
@@ -69,7 +67,6 @@ class Customer(models.Model):
     home_address = models.TextField()
     home_district = models.CharField(max_length=100)
     disease = models.CharField(max_length=100, blank=True, null=True)
-    cause_of_illness = models.TextField(blank=True, null=True)
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
 
     # ✅ Payment Slip Upload

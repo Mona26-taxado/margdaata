@@ -10,13 +10,13 @@
     "orientation": "any",
     "icons": [
         {
-            "src": "/static/assets/img/margdata-icon.png",
+            "src": "/static/margdata-icon-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "/static/assets/img/margdata-icon.png",
+            "src": "/static/margdata-icon-192.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
@@ -29,7 +29,7 @@
             "description": "Login to Margdata",
             "icons": [
                 {
-                    "src": "/static/assets/img/margdata-icon.png",
+                    "src": "/static/margdata-icon-192.png",
                     "sizes": "192x192",
                     "type": "image/png"
                 }
@@ -41,7 +41,7 @@
             "description": "View Dashboard",
             "icons": [
                 {
-                    "src": "/static/assets/img/margdata-icon.png",
+                    "src": "/static/margdata-icon-192.png",
                     "sizes": "192x192",
                     "type": "image/png"
                 }
@@ -52,7 +52,7 @@
     "categories": ["business", "productivity"],
     "screenshots": [
         {
-            "src": "/static/assets/img/margdata-icon.png",
+            "src": "/static/margdata-icon-192.png",
             "sizes": "512x512",
             "type": "image/png",
             "form_factor": "wide"

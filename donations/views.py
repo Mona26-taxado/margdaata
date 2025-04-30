@@ -36,6 +36,7 @@ from django.db.models import Sum
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 def admin_dashboard(request):
     total_users = CustomUser.objects.count()
@@ -194,6 +195,11 @@ def approve_user(request, user_id):
     )
 
     return redirect("manage_members")
+
+
+
+
+
 
 from django.urls import reverse
 
@@ -759,11 +765,10 @@ def generate_id_card(request):
         "name": (10, 70),  
         "email": (10, 90),
         "mobile": (10, 110),
-        "dob": (10, 130),  
-        "aadhar": (10, 150),
-        "posting_state": (10, 170),
-        "md_code": (10, 190),
-        "registered_on": (10, 210),
+        "dob": (10, 130),
+        "posting_state": (10, 150),
+        "md_code": (10, 170),
+        "registered_on": (10, 190),
     }
 
     # ✅ Add user details with better text wrapping
@@ -771,7 +776,6 @@ def generate_id_card(request):
     add_wrapped_text(page, "Email:", customer.email or "N/A", text_positions["email"], max_width=120, line_spacing=10)
     add_wrapped_text(page, "Mobile:", customer.mobile or "N/A", text_positions["mobile"])
     add_wrapped_text(page, "DOB:", customer.dob.strftime('%d-%m-%Y') if customer.dob else "N/A", text_positions["dob"])
-    add_wrapped_text(page, "Aadhar:", customer.aadhar or "N/A", text_positions["aadhar"])
     add_wrapped_text(page, "State:", customer.posting_state or "N/A", text_positions["posting_state"], max_width=120, line_spacing=10)
     add_wrapped_text(page, "MD Code:", customer.md_code or "N/A", text_positions["md_code"])
     add_wrapped_text(page, "Registered On:", customer.created_at.strftime('%d-%m-%Y'), text_positions["registered_on"])
@@ -904,4 +908,6 @@ def upi_qr(request):
     response = HttpResponse(content_type="image/png")
     img.save(response, "PNG")
     return response
+
+
 

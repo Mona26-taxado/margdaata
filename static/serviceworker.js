@@ -13,7 +13,7 @@ const urlsToCache = [
     '/static/js/core/bootstrap.min.js',
     '/static/js/kaiadmin.min.js',
     '/static/assets/img/MARGDATA__1.png',
-    '/static/assets/img/margdata-icon.png',
+    '/static/assets/img/margdata - copy.png',
     '/static/manifest.json',
     '/static/assets/css/fonts.min.css',
     '/static/assets/js/plugin/webfont/webfont.min.js',

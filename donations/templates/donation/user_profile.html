@@ -110,16 +110,27 @@ input:disabled, textarea:disabled {
                             </div>
                         </div>
 
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label class="form-label"><b>Home District:</b></label>
+                                <input type="text" name="home_district" class="form-control" value="{{ customer.home_district }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label"><b>Home State:</b></label>
+                                <input type="text" name="home_state" class="form-control" value="{{ customer.home_state }}" disabled>
+                            </div>
+                        </div>
+
                         <h4 class="mt-4"><i class="fa fa-building"></i> Work Details</h4>
                         <hr>
 
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Department:</b></label>
+                                <label class="form-label"><b>Sector:</b></label>
                                 <input type="text" name="department" class="form-control" value="{{ customer.department }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>Post:</b></label>
+                                <label class="form-label"><b>Department:</b></label>
                                 <input type="text" name="post" class="form-control" value="{{ customer.post }}" disabled>
                             </div>
                         </div>

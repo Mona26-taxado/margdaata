@@ -470,8 +470,28 @@ def delete_member(request, user_id):
     return redirect("view_members")
 
 def user_view_members(request):
-    approved_users = Customer.objects.filter(approved=True).order_by("-created_at")  # ✅ Order by newest first
-    return render(request, "donation/user_view_members.html", {"approved_users": approved_users})
+    search_query = request.GET.get('search', '')
+    approved_users = Customer.objects.filter(approved=True).order_by("-created_at")
+    if search_query:
+        approved_users = approved_users.filter(
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(mobile__icontains=search_query)
+        )
+    paginator = Paginator(approved_users, 10)  # 10 per page
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
+    # Calculate starting index for serial numbers
+    start_index = (page_obj.number - 1) * paginator.per_page + 1
+    for index, user in enumerate(page_obj, start=start_index):
+        user.serial_number = index
+        
+    return render(request, "donation/user_view_members.html", {
+        "approved_users": page_obj,
+        "search_query": search_query,
+        "page_obj": page_obj,
+    })
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)

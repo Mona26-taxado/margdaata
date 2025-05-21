@@ -20,25 +20,20 @@
     <!-- Manifest -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
     
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'assets/img/margdata-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'assets/img/margdata-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="192x192" href="{% static 'assets/img/margdata-icon.png' %}">
-    <link rel="apple-touch-icon" sizes="512x512" href="{% static 'assets/img/margdata-icon.png' %}">
-    <link rel="mask-icon" href="{% static 'assets/img/margdata-icon.png' %}" color="#141E30">
-    
-    <!-- Apple Splash Screen Images -->
-    <link rel="apple-touch-startup-image" href="{% static 'assets/img/margdata-icon.png' %}">
-    
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'margdata-icon-192.png' %}">
+<link rel="icon" type="image/png" sizes="512x512" href="{% static 'margdata-icon-512.png' %}">
+<link rel="apple-touch-icon" sizes="192x192" href="{% static 'margdata-icon-192.png' %}">
+<link rel="apple-touch-icon" sizes="512x512" href="{% static 'margdata-icon-512.png' %}">
+<link rel="mask-icon" href="{% static 'margdata-icon-512.png' %}" color="#141E30">
     <!-- Microsoft Tile -->
-    <meta name="msapplication-TileImage" content="{% static 'assets/img/margdata-icon.png' %}">
+    <meta name="msapplication-TileImage" content="{% static 'assets/img/margdata - copy.png' %}">
     <meta name="msapplication-TileColor" content="#141E30">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <!-- Prevent duplicate icon declarations -->
-    <link rel="shortcut icon" href="{% static 'assets/img/margdata-icon.png' %}" type="image/x-icon"/>
+    <link rel="shortcut icon" href="{% static 'assets/img/margdata - copy.png' %}" type="image/x-icon"/>
 
     <style>
         body {
@@ -188,12 +183,27 @@
                 max-width: 98vw;
             }
         }
+
+        .app-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin: 0 auto 10px auto;
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .app-logo {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="{% static 'assets/img/margdata-icon.png' %}" alt="logo" width="50%"/>
+    <img src="{% static 'assets/img/margdata - copy.png' %}" alt="logo" class="app-logo" width="120" height="120"/>
     <h2 class="mt-3">Margdata</h2>
     
     <form method="POST" action="{% url 'login' %}">
@@ -220,7 +230,7 @@
     </form>
 
     <!-- Responsive Install App Button -->
-    <button id="installAppBtn" class="install-app-btn" style="display:none;">
+    <button id="installAppBtn" class="install-app-btn">
         <i class="fa fa-download"></i> Install App
     </button>
 </div>
@@ -244,18 +254,33 @@
     // Responsive Install App Button logic
     let deferredPrompt;
     const installAppBtn = document.getElementById('installAppBtn');
+    let installAvailable = false;
+
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        installAppBtn.style.display = 'block';
+        installAvailable = true;
     });
+
     installAppBtn.addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
             deferredPrompt = null;
-            installAppBtn.style.display = 'none';
+            installAvailable = false;
+        } else {
+            alert('App installation is not available on your device/browser right now.');
         }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        installAvailable = false;
     });
 </script>
 

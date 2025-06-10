@@ -67,11 +67,7 @@ class Customer(models.Model):
     home_address = models.TextField()
     home_district = models.CharField(max_length=100)
     disease = models.CharField(max_length=100, blank=True, null=True)
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)
-
-    # ✅ Payment Slip Upload
-    payment_slip = models.FileField(upload_to='payment_slips/', blank=False, null=False)
-
+    
     # ✅ Fix Password Storage (Use Hashed Passwords)
     password = models.CharField(max_length=255, blank=True, null=True)
 

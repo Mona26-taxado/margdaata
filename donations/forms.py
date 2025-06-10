@@ -25,13 +25,10 @@ class CustomerRegistrationForm(forms.ModelForm):
         model = Customer
         fields = [
             'name', 'email', 'gender', 'dob', 'mobile',
-            'department', 'post', 'transaction_id', 'home_address',
-            'payment_slip'
+            'department', 'post', 'home_address', 'home_district'
         ]
         widgets = {
             'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'payment_slip': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-            'transaction_id': forms.TextInput(attrs={'class': 'form-control'}),
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'department': forms.TextInput(attrs={'class': 'form-control'}),
             'post': forms.TextInput(attrs={'class': 'form-control'}),
@@ -47,8 +44,8 @@ class CustomerEditForm(forms.ModelForm):
         fields = [
             "name", "email", "mobile", "mobile_home", "dob", "gender",
             "first_nominee_name", "first_nominee_relation", "first_nominee_mobile", 
-            "department", "post", "posting_state", "posting_district", "home_address","disease","transaction_id","home_district",
-            "payment_slip", "approved"
+            "department", "post", "posting_state", "posting_district", "home_address","disease","home_district",
+            "approved"
         ]
         widgets = {
             "dob": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
@@ -56,8 +53,6 @@ class CustomerEditForm(forms.ModelForm):
             "posting_state": forms.TextInput(attrs={"class": "form-control"}),
             "posting_district": forms.TextInput(attrs={"class": "form-control"}),
             "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
-            "payment_slip": forms.FileInput(attrs={"class": "form-control"}),
-            "transaction_id": forms.TextInput(attrs={"class": "form-control"}),
             "approved": forms.Select(choices=[(True, "Approved"), (False, "Pending")], attrs={"class": "form-control"}),
             # ✅ Add Nominee Details Styling
             "first_nominee_name": forms.TextInput(attrs={"class": "form-control"}),

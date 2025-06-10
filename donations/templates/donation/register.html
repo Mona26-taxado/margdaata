@@ -183,22 +183,14 @@
 </div>
 
   <div class="row mt-3">
-  <div class="col-md-6">
-    <label class="form-label"><i class="fa fa-file-invoice"></i> Transaction ID *</label>
-    <input type="text" name="transaction_id" class="form-control" placeholder="Enter Transaction ID" required>
-</div>
-<div class="col-md-6">
-    <label class="form-label"><i class="fa fa-upload"></i> Upload Payment Slip *</label>
-<input type="file" name="payment_slip" class="form-control required">
-<div class="text-danger"></div>
-</div>
+  
 <!-- Move QR section here, above transaction fields -->
 <div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
     <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
     <div>
         <img src="{% url 'upi_qr' %}" alt="Pay ₹50 to Margdata Trust UPI" style="max-width: 200px;" />
     </div>
-    <a href="upi://pay?pa=margdatatrust@sbi&pn=Margdata%20Trust&am=50&cu=INR" class="btn btn-success mt-3" style="font-weight:bold;font-size:1.1rem;">
+    <a href="https://rzp.io/rzp/00PGsvx" class="btn btn-success mt-3" style="font-weight:bold;font-size:1.1rem;">
         <i class="fa fa-mobile-alt"></i> Pay Now
     </a>
     <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>

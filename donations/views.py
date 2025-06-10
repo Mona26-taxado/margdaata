@@ -139,7 +139,6 @@ def register_customer(request):
                         f'Name: {customer.name}\n'
                         f'Email: {customer.email}\n'
                         f'Mobile: {customer.mobile}\n'
-                        f'Transaction ID: {customer.transaction_id}\n'
                         f'Registered On: {customer.created_at.strftime("%d-%m-%Y %H:%M")}',
                         settings.EMAIL_HOST_USER,
                         list(admin_emails),
@@ -195,11 +194,6 @@ def approve_user(request, user_id):
     )
 
     return redirect("manage_members")
-
-
-
-
-
 
 from django.urls import reverse
 
@@ -304,7 +298,6 @@ def generate_payment_receipt(request, customer_id):
     pdf.drawString(100, 660, f"Email: {customer.email}")
     pdf.drawString(100, 640, f"Mobile: {customer.mobile}")
     pdf.drawString(100, 620, f"Nominee: {customer.nominee_name} ({customer.nominee_relation})")
-    pdf.drawString(100, 600, f"Payment Slip: {customer.payment_slip.url if customer.payment_slip else 'N/A'}")
 
     pdf.drawString(100, 570, "Thank you for your payment!")
 

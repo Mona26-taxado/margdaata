@@ -27,6 +27,7 @@ import fitz  # PyMuPDF
 from django.http import FileResponse, HttpResponse
 from io import BytesIO
 import qrcode
+import logging
 
 from django.contrib.auth import get_user_model
 import os
@@ -95,7 +96,7 @@ def register_customer(request):
             if form.is_valid():
                 cleaned_data = form.cleaned_data
                 email = cleaned_data.get("email")
-                password = request.POST.get("password")  # Password is not in form, so get from POST
+                password = cleaned_data.get("password")  # Get password from form
 
                 # Check for duplicate email
                 if CustomUser.objects.filter(email=email).exists():
@@ -111,7 +112,7 @@ def register_customer(request):
                     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                         return JsonResponse({'success': False, 'errors': {'password': [error_msg]}}, status=400)
                     else:
-                        form.add_error(None, error_msg)
+                        form.add_error('password', error_msg)
                         return render(request, "donation/register.html", {"form": form})
 
                 user = CustomUser.objects.create(
@@ -152,12 +153,15 @@ def register_customer(request):
             else:
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+                else:
+                    return render(request, "donation/register.html", {"form": form})
         except Exception as e:
             logging.exception("Registration error")
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({'success': False, 'errors': {'__all__': [str(e)]}}, status=500)
             else:
                 messages.error(request, f"Error: {str(e)}")
+                return render(request, "donation/register.html", {"form": form})
     else:
         form = CustomerRegistrationForm()
     return render(request, "donation/register.html", {"form": form})

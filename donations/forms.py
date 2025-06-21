@@ -17,10 +17,42 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'password1', 'password2', 'role')  # ✅ Removed 'username'
+        fields = ('email', 'password2', 'password2', 'role')  # ✅ Removed 'username'
 
 
 class CustomerRegistrationForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'new-password'}),
+        required=True,
+        help_text="Password is required for login"
+    )
+    
+    # Add choices for department and post
+    DEPARTMENT_CHOICES = [
+        ('', 'Select Sector'),
+        ('Government', 'Government'),
+        ('Private', 'Private'),
+    ]
+    
+    GENDER_CHOICES = [
+        ('', 'Select Gender'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+    ]
+    
+    department = forms.ChoiceField(
+        choices=DEPARTMENT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+    
+    gender = forms.ChoiceField(
+        choices=GENDER_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=True
+    )
+    
     class Meta:
         model = Customer
         fields = [
@@ -28,11 +60,13 @@ class CustomerRegistrationForm(forms.ModelForm):
             'department', 'post', 'home_address', 'home_district'
         ]
         widgets = {
-            'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'gender': forms.Select(attrs={'class': 'form-control'}),
-            'department': forms.TextInput(attrs={'class': 'form-control'}),
-            'post': forms.TextInput(attrs={'class': 'form-control'}),
-            'home_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'autocomplete': 'bday'}),
+            'post': forms.Select(attrs={'class': 'form-control'}),
+            'home_address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'autocomplete': 'street-address'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'name'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'email'}),
+            'mobile': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'tel'}),
+            'home_district': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'address-level2'}),
         }
 
 

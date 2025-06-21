@@ -94,6 +94,11 @@
 ;
     margin-top: 15px;
 }
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -114,98 +119,108 @@
 {% endif %}
 {% load static %}
 
-        
+<!-- Payment section moved to top -->
+<div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
+    <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
+    <div>
+        <img src="{% url 'upi_qr' %}" alt="Pay ₹50 to Margdata Trust UPI" style="max-width: 200px;" />
+    </div>
+    <button class="btn btn-primary" onclick="window.location.href='https://rzp.io/rzp/X0X5V9Id'">Pay ₹50</button>
+    <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
+    <h6 class="text-danger font-weight-bold">(सर्वप्रथम कृपया 50₹ वार्षिक व्यवस्था सहयोग राशि ट्रस्ट को दान कर सहयोग करें।)
+    </h6>
+</div>
 
         <div class="row mt-3">
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-user"></i> Full Name *</label>
-                <input type="text" name="name" class="form-control" required>
-                <div class="text-danger"></div>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="error-message">{{ form.name.errors.0 }}</div>
+                {% endif %}
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-envelope"></i> Email * (for login)</label>
-                <input type="email" name="email" class="form-control" required>
-                <div class="text-danger"></div>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                {% endif %}
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-phone"></i> Mobile *</label>
-                <input type="tel" name="mobile" class="form-control" required>
-                <div class="text-danger"></div>
+                {{ form.mobile }}
+                {% if form.mobile.errors %}
+                    <div class="error-message">{{ form.mobile.errors.0 }}</div>
+                {% endif %}
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-secure"></i> Password</label>
-                <input type="text" name="password" class="form-control">
-                <div class="text-danger"></div>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="error-message">{{ form.password.errors.0 }}</div>
+                {% endif %}
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col-md-6">
                 <label for="dob" class="form-label">Date of Birth:</label>
-    <input type="date" class="form-control" name="dob" required>
+                {{ form.dob }}
+                {% if form.dob.errors %}
+                    <div class="error-message">{{ form.dob.errors.0 }}</div>
+                {% endif %}
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-venus-mars"></i> Gender *</label>
-                <select name="gender" class="form-control">
-                    <option value="" selected disabled>Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
+                {{ form.gender }}
+                {% if form.gender.errors %}
+                    <div class="error-message">{{ form.gender.errors.0 }}</div>
+                {% endif %}
             </div>
         </div>
 
         <div class="row mt-3">
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-map-marker-alt"></i> Home District *</label>
-                <input type="text" name="home_district" class="form-control" required>
-                <div class="text-danger"></div>
+                {{ form.home_district }}
+                {% if form.home_district.errors %}
+                    <div class="error-message">{{ form.home_district.errors.0 }}</div>
+                {% endif %}
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-home"></i> Home Address *</label>
-                <textarea name="home_address" class="form-control" rows="2" required></textarea>
+                {{ form.home_address }}
+                {% if form.home_address.errors %}
+                    <div class="error-message">{{ form.home_address.errors.0 }}</div>
+                {% endif %}
             </div>
         </div>
-
 
         <div class="row mt-3">
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-building"></i> Sector*</label>
-                <select name="department" id="department" class="form-control" required>
-                    <option value="" selected disabled>Select Sector</option>
-                    <option value="Government">Government</option>
-                    <option value="Private">Private</option>
-                </select>
+                {{ form.department }}
+                {% if form.department.errors %}
+                    <div class="error-message">{{ form.department.errors.0 }}</div>
+                {% endif %}
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-suitcase"></i> Department *</label>
-                <select name="post" id="post" class="form-control" required>
-                    <option value="" selected disabled>Select Department</option>
-                </select>
+                {{ form.post }}
+                {% if form.post.errors %}
+                    <div class="error-message">{{ form.post.errors.0 }}</div>
+                {% endif %}
             </div>
-</div>
+        </div>
 
   <div class="row mt-3">
   
-<!-- Move QR section here, above transaction fields -->
-<div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
-    <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
-    <div>
-        <img src="{% url 'upi_qr' %}" alt="Pay ₹50 to Margdata Trust UPI" style="max-width: 200px;" />
-    </div>
-    <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
-    <h6 class="text-danger font-weight-bold">(सर्वप्रथम कृपया 50₹ वार्षिक व्यवस्था सहयोग राशि ट्रस्ट को दान कर सहयोग करें।)
-    </h6>
-</div>
-</div>
-<form> 
-    <script src="https://checkout.razorpay.com/v1/payment-button.js" 
-      data-payment_button_id="pl_QgxNYY25QbtasK" async>
-    </script>
-  </form>
+
+<!-- Payment button outside the main form -->
+
 
 <div class="mt-3">
     <input type="checkbox" id="terms" name="terms" required>
@@ -216,9 +231,7 @@
         <br>
     </label>
 </div>
-        <button type="submit" class="btn btn-custom w-100 mt-3">
-            <i class="fa fa-paper-plane"></i>Registration
-        </button>
+<button type="submit" class="btn btn-custom w-100 mt-3"><i class="fa fa-paper-plane"></i> Register</button>
         
     </form>
     
@@ -226,151 +239,159 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
-
-
 <script>
-  document.querySelector("form").addEventListener("submit", function (e) {
-    let requiredFields = document.querySelectorAll("[required]");
-    let isValid = true;
-
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            field.style.border = "2px solid red";  // Highlight missing fields
-        } else {
-            field.style.border = "";
-        }
+    // CSRF token setup
+    $.ajaxSetup({
+        headers: { "X-CSRFToken": "{{ csrf_token }}" }
     });
 
-    if (!isValid) {
-        e.preventDefault();
-        alert("Error: All fields are required.");
-    }
-});
-
-
-  </script>
-  
-<script>
-    $.ajaxSetup({
-    headers: { "X-CSRFToken": "{{ csrf_token }}" }
-});
-
-</script>
-
-<script>
     // Post options for each department
     const postOptions = {
         Government: [
-            "Railway", "Health", "Panchayati Raj", "Irrigation department", "Jal Nigam", "Revenue", "Parivahan", , "Bal Vikas Evam Pustahar", "Electric", "Bank", "Police", "Homegaurd", "Others"
+            "Railway", "Health", "Panchayati Raj", "Irrigation department", "Jal Nigam", "Revenue", "Parivahan", "Bal Vikas Evam Pustahar", "Electric", "Bank", "Police", "Homegaurd", "Others"
         ],
         Private: [
             "Teacher", "Clerk", "Manager", "Peon", "Doctor", "Engineer", "Advocate", "Others"
         ]
     };
-    document.getElementById('department').addEventListener('change', function() {
-        const dept = this.value;
-        const postSelect = document.getElementById('post');
-        postSelect.innerHTML = '<option value="" selected disabled>Select Post</option>';
-        if (dept && postOptions[dept]) {
-            postOptions[dept].forEach(function(opt) {
-                const option = document.createElement('option');
-                option.value = opt;
-                option.textContent = opt;
-                postSelect.appendChild(option);
+    
+    // Department change handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const departmentSelect = document.getElementById('id_department');
+        if (departmentSelect) {
+            departmentSelect.addEventListener('change', function() {
+                const dept = this.value;
+                const postSelect = document.getElementById('id_post');
+                if (postSelect) {
+                    postSelect.innerHTML = '<option value="" selected disabled>Select Post</option>';
+                    if (dept && postOptions[dept]) {
+                        postOptions[dept].forEach(function(opt) {
+                            const option = document.createElement('option');
+                            option.value = opt;
+                            option.textContent = opt;
+                            postSelect.appendChild(option);
+                        });
+                    }
+                }
+            });
+        }
+
+        // Form submission handler
+        const regForm = document.getElementById('registrationForm');
+        const ajaxErrorDiv = document.getElementById('ajax-error-message');
+        
+        if (regForm) {
+            regForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Basic validation
+                let requiredFields = document.querySelectorAll("[required]");
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.border = "2px solid red";
+                    } else {
+                        field.style.border = "";
+                    }
+                });
+
+                if (!isValid) {
+                    alert("Error: All required fields must be filled.");
+                    return;
+                }
+
+                // CSRF token helper
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                const csrftoken = getCookie('csrftoken');
+
+                let form = this;
+                let formData = new FormData(form);
+
+                // Clear previous errors
+                document.querySelectorAll('.error-message').forEach(el => el.innerHTML = '');
+                if (ajaxErrorDiv) {
+                    ajaxErrorDiv.classList.add('d-none');
+                    ajaxErrorDiv.innerHTML = '';
+                }
+
+                // Show loading state
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Registering...';
+                submitBtn.disabled = true;
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => {
+                    return response.json().catch(() => {
+                        console.error('Non-JSON response:', response);
+                        throw new Error('Server returned non-JSON response');
+                    });
+                })
+                .then(data => {
+                    console.log('AJAX response:', data);
+                    if (data.success) {
+                        window.location.href = data.redirect_url;
+                    } else if (data.errors) {
+                        // Show global errors
+                        if (data.errors.__all__) {
+                            if (ajaxErrorDiv) {
+                                ajaxErrorDiv.classList.remove('d-none');
+                                ajaxErrorDiv.innerHTML = data.errors.__all__.join('<br>');
+                            }
+                        }
+                        // Show field errors
+                        for (let field in data.errors) {
+                            if (field === '__all__') continue;
+                            let input = form.querySelector(`[name='${field}']`);
+                            if (input) {
+                                let errorDiv = input.parentElement.querySelector('.error-message');
+                                if (errorDiv) {
+                                    errorDiv.innerHTML = data.errors[field].join('<br>');
+                                }
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('AJAX error:', error);
+                    if (ajaxErrorDiv) {
+                        ajaxErrorDiv.classList.remove('d-none');
+                        ajaxErrorDiv.innerHTML = 'An error occurred. Please try again or check the console for details.';
+                    }
+                })
+                .finally(() => {
+                    // Restore button state
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
             });
         }
     });
 </script>
 
 <div id="ajax-error-message" class="alert alert-danger d-none" role="alert"></div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // CSRF token helper
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
-
-    var regForm = document.getElementById('registrationForm');
-    var ajaxErrorDiv = document.getElementById('ajax-error-message');
-    if (regForm) {
-        regForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            let form = this;
-            let formData = new FormData(form);
-
-            // Clear previous errors
-            document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '');
-            if (ajaxErrorDiv) {
-                ajaxErrorDiv.classList.add('d-none');
-                ajaxErrorDiv.innerHTML = '';
-            }
-
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrftoken
-                }
-            })
-            .then(response => {
-                // Try to parse JSON, but handle non-JSON gracefully
-                return response.json().catch(() => {
-                    console.error('Non-JSON response:', response);
-                    throw new Error('Non-JSON response');
-                });
-            })
-            .then(data => {
-                console.log('AJAX response:', data);
-                if (data.success) {
-                    window.location.href = data.redirect_url;
-                } else if (data.errors) {
-                    // Show global errors (e.g., __all__) at the top
-                    if (data.errors.__all__) {
-                        if (ajaxErrorDiv) {
-                            ajaxErrorDiv.classList.remove('d-none');
-                            ajaxErrorDiv.innerHTML = data.errors.__all__.join('<br>');
-                        }
-                    }
-                    // Show field errors
-                    for (let field in data.errors) {
-                        if (field === '__all__') continue;
-                        let input = form.querySelector(`[name='${field}']`);
-                        if (input) {
-                            let errorDiv = input.parentElement.querySelector('.text-danger');
-                            if (errorDiv) {
-                                errorDiv.innerHTML = data.errors[field].join('<br>');
-                            }
-                        }
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('AJAX error:', error);
-                if (ajaxErrorDiv) {
-                    ajaxErrorDiv.classList.remove('d-none');
-                    ajaxErrorDiv.innerHTML = 'An error occurred. Please try again or check the console for details.';
-                }
-            });
-        });
-    }
-});
-</script>
 
 </body>
 </html>

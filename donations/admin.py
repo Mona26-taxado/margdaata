@@ -22,6 +22,33 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'mobile', 'reference_name', 'approved', 'created_at')
+    list_filter = ('approved', 'gender', 'department', 'created_at')
+    search_fields = ('name', 'email', 'mobile', 'reference_name')
+    readonly_fields = ('md_code', 'created_at')
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'email', 'mobile', 'gender', 'dob', 'aadhar', 'md_code')
+        }),
+        ('Address Information', {
+            'fields': ('home_address', 'home_state', 'home_district', 'posting_state', 'posting_district')
+        }),
+        ('Professional Information', {
+            'fields': ('department', 'post', 'disease', 'blood_group')
+        }),
+        ('Reference Information', {
+            'fields': ('reference_name',)
+        }),
+        ('Nominee Information', {
+            'fields': ('first_nominee_name', 'first_nominee_relation', 'first_nominee_mobile')
+        }),
+        ('Status', {
+            'fields': ('approved', 'created_at')
+        }),
+    )
+
 
 
 

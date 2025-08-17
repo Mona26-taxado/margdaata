@@ -57,7 +57,8 @@ class CustomerRegistrationForm(forms.ModelForm):
         model = Customer
         fields = [
             'name', 'email', 'gender', 'dob', 'mobile',
-            'department', 'post', 'home_address', 'home_district'
+            'department', 'post', 'home_address', 'home_district', 'home_state',
+            'aadhar', 'blood_group', 'reference_name'
         ]
         widgets = {
             'dob': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'autocomplete': 'bday'}),
@@ -67,28 +68,105 @@ class CustomerRegistrationForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'autocomplete': 'email'}),
             'mobile': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'tel'}),
             'home_district': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'address-level2'}),
+            'home_state': forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'address-level1'}),
+            'aadhar': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter 12-digit Aadhar number'}),
+            'blood_group': forms.Select(choices=[
+                ('', 'Select Blood Group'),
+                ('A+', 'A+'), ('A-', 'A-'),
+                ('B+', 'B+'), ('B-', 'B-'),
+                ('AB+', 'AB+'), ('AB-', 'AB-'),
+                ('O+', 'O+'), ('O-', 'O-')
+            ], attrs={'class': 'form-control'}),
+            'reference_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter reference person name (optional)'}),
         }
 
 
 
 
 class CustomerEditForm(forms.ModelForm):
+    # Add choices for department and post
+    DEPARTMENT_CHOICES = [
+        ('', 'Select Sector'),
+        ('Government', 'Government'),
+        ('Private', 'Private'),
+    ]
+    
+    department = forms.ChoiceField(
+        choices=DEPARTMENT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+    
     class Meta:
         model = Customer
         fields = [
             "name", "email", "mobile", "mobile_home", "dob", "gender",
             "first_nominee_name", "first_nominee_relation", "first_nominee_mobile", 
-            "department", "post", "posting_state", "posting_district", "home_address","disease","home_district",
-            "approved"
+            "department", "post", "posting_state", "posting_district", "home_address", "home_district", "home_state",
+            "disease", "aadhar", "blood_group", "reference_name", "approved"
         ]
         widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "mobile": forms.TextInput(attrs={"class": "form-control"}),
+            "mobile_home": forms.TextInput(attrs={"class": "form-control"}),
             "dob": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
-            "gender": forms.Select(attrs={"class": "form-control"}),
+            "gender": forms.Select(choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], attrs={"class": "form-control"}),
             "posting_state": forms.TextInput(attrs={"class": "form-control"}),
             "posting_district": forms.TextInput(attrs={"class": "form-control"}),
-            "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 2}),
+            "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "home_district": forms.TextInput(attrs={"class": "form-control"}),
+            "home_state": forms.TextInput(attrs={"class": "form-control"}),
+            "post": forms.Select(attrs={"class": "form-control"}),
+            "disease": forms.TextInput(attrs={"class": "form-control"}),
+            "aadhar": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter 12-digit Aadhar number"}),
+            "blood_group": forms.Select(choices=[
+                ('', 'Select Blood Group'),
+                ('A+', 'A+'), ('A-', 'A-'),
+                ('B+', 'B+'), ('B-', 'B-'),
+                ('AB+', 'AB+'), ('AB-', 'AB-'),
+                ('O+', 'O+'), ('O-', 'O-')
+            ], attrs={"class": "form-control"}),
             "approved": forms.Select(choices=[(True, "Approved"), (False, "Pending")], attrs={"class": "form-control"}),
-            # ✅ Add Nominee Details Styling
+            "first_nominee_name": forms.TextInput(attrs={"class": "form-control"}),
+            "first_nominee_relation": forms.TextInput(attrs={"class": "form-control"}),
+            "first_nominee_mobile": forms.TextInput(attrs={"class": "form-control"}),
+            "reference_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter reference person name (optional)"}),
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = [
+            "name", "mobile", "email", "dob", "gender", "aadhar",
+            "home_address", "home_state", "home_district",
+            "department", "post", "posting_state", "posting_district",
+            "blood_group", "disease",
+            "first_nominee_name", "first_nominee_relation", "first_nominee_mobile"
+        ]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "mobile": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "dob": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "gender": forms.Select(choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')], attrs={"class": "form-control"}),
+            "aadhar": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter 12-digit Aadhar number"}),
+            "home_address": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "home_state": forms.TextInput(attrs={"class": "form-control"}),
+            "home_district": forms.TextInput(attrs={"class": "form-control"}),
+            "department": forms.TextInput(attrs={"class": "form-control"}),
+            "post": forms.TextInput(attrs={"class": "form-control"}),
+            "posting_state": forms.TextInput(attrs={"class": "form-control"}),
+            "posting_district": forms.TextInput(attrs={"class": "form-control"}),
+            "blood_group": forms.Select(choices=[
+                ('', 'Select Blood Group'),
+                ('A+', 'A+'), ('A-', 'A-'),
+                ('B+', 'B+'), ('B-', 'B-'),
+                ('AB+', 'AB+'), ('AB-', 'AB-'),
+                ('O+', 'O+'), ('O-', 'O-')
+            ], attrs={"class": "form-control"}),
+            "disease": forms.TextInput(attrs={"class": "form-control"}),
             "first_nominee_name": forms.TextInput(attrs={"class": "form-control"}),
             "first_nominee_relation": forms.TextInput(attrs={"class": "form-control"}),
             "first_nominee_mobile": forms.TextInput(attrs={"class": "form-control"}),

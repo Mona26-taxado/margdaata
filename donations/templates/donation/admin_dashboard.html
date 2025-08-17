@@ -41,6 +41,29 @@
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="{% static 'assets/css/demo.css' %}" />
+    
+    <style>
+        .dashboard-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+            border-color: #4e73df;
+        }
+        
+        .dashboard-card:hover i {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .text-decoration-none:hover {
+            text-decoration: none !important;
+        }
+    </style>
   </head>
   <body>
       
@@ -156,6 +179,12 @@
                   <p>Manage Notifications</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{% url 'admin_id_card_management' %}">
+                  <i class="fas fa-id-card"></i>
+                  <p>User ID Card</p>
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -248,39 +277,91 @@
             <div class="container mt-4">
               <div class="row g-3">
                   <div class="col-lg-3 col-md-6 col-12">
-                      <div class="card shadow-sm text-center p-3">
-                          <i class="fa fa-users fa-3x text-primary"></i>
-                          <h5 class="mt-2">सदस्य</h5>
-                          <h4 class="text-dark">{{ total_users|default:"0" }}</h4>  <!-- ✅ Shows total users -->
-                      </div>
+                      <a href="{% url 'view_members' %}" class="text-decoration-none">
+                          <div class="card shadow-sm text-center p-3 dashboard-card">
+                              <i class="fa fa-users fa-3x text-primary"></i>
+                              <h5 class="mt-2">सदस्य</h5>
+                              <h4 class="text-dark">{{ total_users|default:"0" }}</h4>  <!-- ✅ Shows total users -->
+                          </div>
+                      </a>
                   </div>
           
                   <div class="col-lg-3 col-md-6 col-12">
-                      <div class="card shadow-sm text-center p-3">
-                          <i class="fa fa-hand-holding-heart fa-3x text-info"></i>
-                          <h5 class="mt-2">सहयोग सूची</h5>
-                          <h4 class="text-dark">{{ total_sahyog|default:"0" }}</h4>  <!-- ✅ Shows total sahyog -->
-                      </div>
+                      <a href="{% url 'sahyog_list' %}" class="text-decoration-none">
+                          <div class="card shadow-sm text-center p-3 dashboard-card">
+                              <i class="fa fa-hand-holding-heart fa-3x text-info"></i>
+                              <h5 class="mt-2">सहयोग सूची</h5>
+                              <h4 class="text-dark">{{ total_sahyog|default:"0" }}</h4>  <!-- ✅ Shows total sahyog -->
+                          </div>
+                      </a>
                   </div>
           
                   <div class="col-lg-3 col-md-6 col-12">
-                      <div class="card shadow-sm text-center p-3">
-                          <i class="fa fa-tint fa-3x text-success"></i>
-                          <h5 class="mt-2">रक्तदाता</h5>
-                          <h4 class="text-dark">{{ total_blood_donors|default:"0" }}</h4>  <!-- ✅ Shows total blood donors -->
-                      </div>
+                      <a href="{% url 'blood_donation_list' %}" class="text-decoration-none">
+                          <div class="card shadow-sm text-center p-3 dashboard-card">
+                              <i class="fa fa-tint fa-3x text-success"></i>
+                              <h5 class="mt-2">रक्तदाता</h5>
+                              <h4 class="text-dark">{{ total_blood_donors|default:"0" }}</h4>  <!-- ✅ Shows total blood donors -->
+                          </div>
+                      </a>
                   </div>
           
                   <div class="col-lg-3 col-md-6 col-12">
-                      <div class="card shadow-sm text-center p-3">
-                          <i class="fa fa-money-bill fa-3x text-purple"></i>
-                          <h5 class="mt-2">व्यवस्था शुल्क</h5>
-                          <h4 class="text-dark">{{ total_vyawastha_shulk|default:"0" }}</h4>  <!-- ✅ Shows total vyawastha shulk -->
-                      </div>
+                      <a href="{% url 'admin_vyawastha_shulk_receipts' %}" class="text-decoration-none">
+                          <div class="card shadow-sm text-center p-3 dashboard-card">
+                              <i class="fa fa-money-bill fa-3x text-purple"></i>
+                              <h5 class="mt-2">व्यवस्था शुल्क</h5>
+                              <h4 class="text-dark">{{ total_vyawastha_shulk|default:"0" }}</h4>  <!-- ✅ Shows total vyawastha shulk -->
+                          </div>
+                      </a>
                   </div>
               </div>
           </div>
           
+          <!-- Download Excel Data Section -->
+          <div class="container mt-5">
+              <div class="row">
+                  <div class="col-12">
+                      <div class="card shadow-sm">
+                          <div class="card-header bg-success text-white">
+                              <h5 class="mb-0"><i class="fa fa-download"></i> Download Excel Reports</h5>
+                          </div>
+                          <div class="card-body">
+                              <div class="row">
+                                  <div class="col-md-6">
+                                      <div class="d-flex align-items-center p-3 border rounded">
+                                          <div class="me-3">
+                                              <i class="fa fa-users fa-2x text-primary"></i>
+                                          </div>
+                                          <div class="flex-grow-1">
+                                              <h6 class="mb-1">Total Members Data</h6>
+                                              <p class="text-muted mb-2">Download complete member list with all details</p>
+                                              <a href="{% url 'download_members_excel' %}" class="btn btn-primary btn-sm">
+                                                  <i class="fa fa-file-excel"></i> Download Excel
+                                              </a>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-6">
+                                      <div class="d-flex align-items-center p-3 border rounded">
+                                          <div class="me-3">
+                                              <i class="fa fa-hand-holding-heart fa-2x text-info"></i>
+                                          </div>
+                                          <div class="flex-grow-1">
+                                              <h6 class="mb-1">Sahyog List Data</h6>
+                                              <p class="text-muted mb-2">Download complete sahyog list with all details</p>
+                                              <a href="{% url 'download_sahyog_excel' %}" class="btn btn-info btn-sm">
+                                                  <i class="fa fa-file-excel"></i> Download Excel
+                                              </a>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
            
           </div>
           

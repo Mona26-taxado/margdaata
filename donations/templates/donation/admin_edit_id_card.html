@@ -1,0 +1,495 @@
+{% extends "donation/base.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+    .edit-form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .card-header {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .card-title {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    .card-description {
+        margin-bottom: 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+    .photo-preview {
+        width: 150px;
+        height: 200px;
+        border: 3px dashed #007bff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        margin: 0 auto;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .photo-preview:hover {
+        border-color: #0056b3;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    }
+    .photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .form-control[readonly] {
+        background-color: #f8f9fa;
+        color: #6c757d;
+    }
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .btn-lg:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 0;
+    }
+    .breadcrumb-item a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+    .page-header {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid #007bff;
+    }
+    .page-title {
+        margin-bottom: 10px;
+        color: #495057;
+        font-weight: 600;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .edit-form-card {
+            margin: 10px;
+            border-radius: 10px;
+        }
+        .card-header {
+            padding: 15px;
+        }
+        .card-title {
+            font-size: 18px;
+        }
+        .card-description {
+            font-size: 13px;
+        }
+        .photo-preview {
+            width: 120px;
+            height: 160px;
+        }
+        .btn-lg {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .page-header {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            font-size: 18px;
+        }
+        .form-label {
+            font-size: 14px;
+        }
+        .form-control {
+            font-size: 14px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .edit-form-card {
+            margin: 5px;
+            border-radius: 8px;
+        }
+        .card-header {
+            padding: 12px;
+        }
+        .card-title {
+            font-size: 16px;
+        }
+        .photo-preview {
+            width: 100px;
+            height: 130px;
+        }
+        .btn-lg {
+            padding: 8px 16px;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .page-header {
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        .page-title {
+            font-size: 16px;
+        }
+        .breadcrumb {
+            font-size: 12px;
+        }
+        .form-label {
+            font-size: 13px;
+        }
+        .form-control {
+            font-size: 13px;
+        }
+        .col-md-4, .col-md-8 {
+            margin-bottom: 20px;
+        }
+    }
+    
+    /* Animation for photo preview */
+    .photo-preview img {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    /* Enhanced form styling */
+    .form-control {
+        border-radius: 6px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:hover {
+        border-color: #007bff;
+    }
+    
+    .form-select {
+        border-radius: 6px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    /* Alert styling */
+    .alert {
+        border-radius: 8px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* File input styling */
+    input[type="file"] {
+        border: 2px dashed #007bff;
+        border-radius: 8px;
+        padding: 10px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    
+    input[type="file"]:hover {
+        border-color: #0056b3;
+        background: #e3f2fd;
+    }
+    
+    /* Section dividers */
+    .section-divider {
+        border-top: 1px solid #e9ecef;
+        margin: 30px 0;
+        padding-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .section-divider {
+            margin: 20px 0;
+            padding-top: 15px;
+        }
+    }
+</style>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h3 class="page-title">
+                    <i class="fas fa-edit text-primary"></i>
+                    Edit ID Card - {{ customer.name }}
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'admin_id_card_management' %}">User ID Cards</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit ID Card</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Edit Form Card -->
+            <div class="edit-form-card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-user-edit"></i>
+                        Edit ID Card Details
+                    </h4>
+                    <p class="card-description">
+                        Update user information and photo for ID card generation
+                    </p>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <!-- Photo Upload Section -->
+                            <div class="col-lg-4 col-md-5 mb-4">
+                                <div class="text-center">
+                                    <label class="form-label">
+                                        <i class="fas fa-camera text-primary"></i>
+                                        ID Card Photo
+                                    </label>
+                                    <div class="photo-preview mb-3" id="photoPreview">
+                                        {% if customer.photo %}
+                                            <img src="{{ customer.photo.url }}" alt="{{ customer.name }}" id="previewImage">
+                                        {% else %}
+                                            <div class="text-muted">
+                                                <i class="fas fa-camera fa-3x"></i>
+                                                <p class="mt-2 mb-0">No photo uploaded</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <input type="file" name="photo" id="photoInput" class="form-control" accept="image/*">
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        Upload a passport size photo (JPG, PNG)
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- User Details Section -->
+                            <div class="col-lg-8 col-md-7">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-user text-primary"></i>
+                                            Full Name *
+                                        </label>
+                                        <input type="text" name="name" class="form-control" value="{{ customer.name }}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-envelope text-primary"></i>
+                                            Email *
+                                        </label>
+                                        <input type="email" name="email" class="form-control" value="{{ customer.email }}" required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-phone text-primary"></i>
+                                            Mobile Number *
+                                        </label>
+                                        <input type="text" name="mobile" class="form-control" value="{{ customer.mobile }}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-tint text-primary"></i>
+                                            Blood Group
+                                        </label>
+                                        <select name="blood_group" class="form-select">
+                                            <option value="">Select Blood Group</option>
+                                            <option value="A+" {% if customer.blood_group == "A+" %}selected{% endif %}>A+</option>
+                                            <option value="A-" {% if customer.blood_group == "A-" %}selected{% endif %}>A-</option>
+                                            <option value="B+" {% if customer.blood_group == "B+" %}selected{% endif %}>B+</option>
+                                            <option value="B-" {% if customer.blood_group == "B-" %}selected{% endif %}>B-</option>
+                                            <option value="AB+" {% if customer.blood_group == "AB+" %}selected{% endif %}>AB+</option>
+                                            <option value="AB-" {% if customer.blood_group == "AB-" %}selected{% endif %}>AB-</option>
+                                            <option value="O+" {% if customer.blood_group == "O+" %}selected{% endif %}>O+</option>
+                                            <option value="O-" {% if customer.blood_group == "O-" %}selected{% endif %}>O-</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-map-marker-alt text-primary"></i>
+                                            State
+                                        </label>
+                                        <input type="text" name="home_state" class="form-control" value="{{ customer.home_state|default:'' }}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-city text-primary"></i>
+                                            District *
+                                        </label>
+                                        <input type="text" name="home_district" class="form-control" value="{{ customer.home_district }}" required>
+                                    </div>
+                                </div>
+
+                                <!-- Read-only Information -->
+                                <div class="section-divider">
+                                    <h6 class="text-muted mb-3">
+                                        <i class="fas fa-info-circle"></i>
+                                        System Information (Read-only)
+                                    </h6>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-id-card text-primary"></i>
+                                            MD Code
+                                        </label>
+                                        <input type="text" class="form-control" value="{{ customer.md_code }}" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-calendar text-primary"></i>
+                                            Registration Date
+                                        </label>
+                                        <input type="text" class="form-control" value="{{ customer.created_at|date:'d M Y' }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="section-divider">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                                        <i class="fas fa-save"></i>
+                                        Update ID Card
+                                    </button>
+                                    <a href="{% url 'admin_id_card_management' %}" class="btn btn-secondary btn-lg">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Back to List
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Photo preview functionality
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('photoPreview');
+        
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Preview" id="previewImage">`;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = `
+                <div class="text-muted">
+                    <i class="fas fa-camera fa-3x"></i>
+                    <p class="mt-2 mb-0">No photo uploaded</p>
+                </div>
+            `;
+        }
+    });
+
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+
+    // Auto-hide alerts
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
+
+    // Enhanced form interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add loading state to submit button
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        form.addEventListener('submit', function() {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            submitBtn.disabled = true;
+        });
+        
+        // File input enhancement
+        const fileInput = document.getElementById('photoInput');
+        fileInput.addEventListener('change', function() {
+            const fileName = this.files[0]?.name;
+            if (fileName) {
+                const small = this.nextElementSibling;
+                small.innerHTML = `<i class="fas fa-check text-success"></i> Selected: ${fileName}`;
+            }
+        });
+    });
+</script>
+
+{% endblock %}

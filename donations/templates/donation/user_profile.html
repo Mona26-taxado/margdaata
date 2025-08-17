@@ -20,7 +20,7 @@
 }
 
 .edit-btn {
-    background: #28a745; /* Green color */
+    background: #28a745;
     border: none;
     padding: 8px 15px;
     font-size: 1rem;
@@ -35,7 +35,7 @@
 }
 
 .btn-primary {
-    display: none; /* Initially hidden */
+    display: none;
     background: #007bff;
     border: none;
     padding: 10px 20px;
@@ -47,16 +47,46 @@
     background: #0056b3;
 }
 
-input:disabled, textarea:disabled {
+input:disabled, textarea:disabled, select:disabled {
     background: #f8f9fa;
     border: 1px solid #ddd;
     cursor: not-allowed;
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+h4 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    padding: 0.75rem;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.2);
+}
+
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 </style>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card shadow-lg">
                 <div class="card-header bg-primary text-white">
                     <h3><i class="fa fa-user-circle"></i> User Profile</h3>
@@ -64,7 +94,7 @@ input:disabled, textarea:disabled {
                 </div>
                 <div class="card-body">
                     
-                    <!-- ✅ Success Message -->
+                    <!-- Success Message -->
                     {% if messages %}
                         <div class="alert alert-success">
                             {% for message in messages %}
@@ -73,111 +103,179 @@ input:disabled, textarea:disabled {
                         </div>
                     {% endif %}
 
-                    <!-- ✅ Profile Form -->
-                    <form method="POST" id="profileForm">
+                    <!-- Profile Form -->
+                    <form method="POST" id="profileForm" enctype="multipart/form-data">
                         {% csrf_token %}
 
+                        <!-- Basic Information -->
+                        <h4><i class="fa fa-user"></i> Basic Information</h4>
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Full Name:</b></label>
+                                <label class="form-label">Full Name:</label>
                                 <input type="text" name="name" class="form-control" value="{{ customer.name }}" disabled required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>Mobile:</b></label>
+                                <label class="form-label">Mobile:</label>
                                 <input type="text" name="mobile" class="form-control" value="{{ customer.mobile }}" disabled required>
+                            </div>
+                        </div>
+
+                        <!-- ID Card Photo -->
+                        <h4><i class="fa fa-camera"></i> ID Card Photo</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Current Photo:</label>
+                                <div class="text-center mb-3">
+                                    {% if customer.photo %}
+                                        <img src="{{ customer.photo.url }}" alt="{{ customer.name }}" style="width: 150px; height: 200px; object-fit: cover; border: 2px solid #007bff; border-radius: 10px;">
+                                    {% else %}
+                                        <div style="width: 150px; height: 200px; border: 2px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; margin: 0 auto;">
+                                            <div class="text-muted">
+                                                <i class="fa fa-camera fa-3x"></i>
+                                                <p class="mt-2">No photo uploaded</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Upload New Photo:</label>
+                                <input type="file" name="photo" class="form-control" accept="image/*" disabled>
+                                <small class="form-text text-muted">Upload a passport size photo for your ID card (JPG, PNG)</small>
+                            </div>
+                        </div>
+
+                        <!-- ID Card Download Section -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1"><i class="fa fa-id-card"></i> Your ID Card</h5>
+                                            <p class="mb-0">Download your personalized ID card with all your details.</p>
+                                        </div>
+                                        <a href="{% url 'user_download_id_card' %}" class="btn btn-success">
+                                            <i class="fa fa-download"></i> Download ID Card
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Email:</b></label>
+                                <label class="form-label">Email:</label>
                                 <input type="email" name="email" class="form-control" value="{{ customer.email }}" disabled required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>Date of Birth:</b></label>
+                                <label class="form-label">Date of Birth:</label>
                                 <input type="date" name="dob" class="form-control" value="{{ customer.dob|date:'Y-m-d' }}" disabled>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Aadhar Number:</b></label>
-                                <input type="text" name="aadhar" class="form-control" value="{{ customer.aadhar }}" disabled>
+                                <label class="form-label">Gender:</label>
+                                <select name="gender" class="form-control" disabled>
+                                    <option value="Male" {% if customer.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if customer.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if customer.gender == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>Home Address:</b></label>
-                                <textarea name="home_address" class="form-control" disabled>{{ customer.home_address }}</textarea>
+                                <label class="form-label">Aadhar Number:</label>
+                                <input type="text" name="aadhar" class="form-control" value="{{ customer.aadhar|default:'' }}" disabled maxlength="12">
+                            </div>
+                        </div>
+
+                        <!-- Address Information -->
+                        <h4><i class="fa fa-map-marker-alt"></i> Address Information</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Permanent Address:</label>
+                                <textarea name="home_address" class="form-control" disabled rows="3">{{ customer.home_address }}</textarea>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Home District:</b></label>
+                                <label class="form-label">Home State:</label>
+                                <input type="text" name="home_state" class="form-control" value="{{ customer.home_state|default:'' }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Home District:</label>
                                 <input type="text" name="home_district" class="form-control" value="{{ customer.home_district }}" disabled>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label"><b>Home State:</b></label>
-                                <input type="text" name="home_state" class="form-control" value="{{ customer.home_state }}" disabled>
-                            </div>
                         </div>
 
-                        <h4 class="mt-4"><i class="fa fa-building"></i> Work Details</h4>
-                        <hr>
-
+                        <!-- Work Details -->
+                        <h4><i class="fa fa-building"></i> Work Details</h4>
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Sector:</b></label>
-                                <input type="text" name="department" class="form-control" value="{{ customer.department }}" disabled>
+                                <label class="form-label">Sector:</label>
+                                <input type="text" name="department" class="form-control" value="{{ customer.department|default:'' }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>Department:</b></label>
-                                <input type="text" name="post" class="form-control" value="{{ customer.post }}" disabled>
+                                <label class="form-label">Department:</label>
+                                <input type="text" name="post" class="form-control" value="{{ customer.post|default:'' }}" disabled>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Posting State:</b></label>
-                                <input type="text" name="posting_state" class="form-control" value="{{ customer.posting_state }}" disabled>
+                                <label class="form-label">Posting State:</label>
+                                <input type="text" name="posting_state" class="form-control" value="{{ customer.posting_state|default:'' }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>Posting District:</b></label>
-                                <input type="text" name="posting_district" class="form-control" value="{{ customer.posting_district }}" disabled>
-                            </div>
-                        </div>
-
-                        <h4 class="mt-4"><i class="fa fa-heartbeat"></i> Medical Information</h4>
-                        <hr>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label"><b>Disease:</b></label>
-                                <input type="text" name="disease" class="form-control" value="{{ customer.disease }}" disabled>
+                                <label class="form-label">Posting District:</label>
+                                <input type="text" name="posting_district" class="form-control" value="{{ customer.posting_district|default:'' }}" disabled>
                             </div>
                         </div>
 
-                        <h4 class="mt-4"><i class="fa fa-user-friends"></i> Nominee Details</h4>
-                        <hr>
-
+                        <!-- Medical Information -->
+                        <h4><i class="fa fa-heartbeat"></i> Medical Information</h4>
                         <div class="row">
                             <div class="col-md-6">
-                                <label class="form-label"><b>First Nominee Name:</b></label>
+                                <label class="form-label">Blood Group:</label>
+                                <select name="blood_group" class="form-control" disabled>
+                                    <option value="">Select Blood Group</option>
+                                    <option value="A+" {% if customer.blood_group == 'A+' %}selected{% endif %}>A+</option>
+                                    <option value="A-" {% if customer.blood_group == 'A-' %}selected{% endif %}>A-</option>
+                                    <option value="B+" {% if customer.blood_group == 'B+' %}selected{% endif %}>B+</option>
+                                    <option value="B-" {% if customer.blood_group == 'B-' %}selected{% endif %}>B-</option>
+                                    <option value="AB+" {% if customer.blood_group == 'AB+' %}selected{% endif %}>AB+</option>
+                                    <option value="AB-" {% if customer.blood_group == 'AB-' %}selected{% endif %}>AB-</option>
+                                    <option value="O+" {% if customer.blood_group == 'O+' %}selected{% endif %}>O+</option>
+                                    <option value="O-" {% if customer.blood_group == 'O-' %}selected{% endif %}>O-</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Diseases:</label>
+                                <input type="text" name="disease" class="form-control" value="{{ customer.disease|default:'' }}" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Nominee Details -->
+                        <h4><i class="fa fa-user-friends"></i> Nominee Details</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Nominee Name:</label>
                                 <input type="text" name="first_nominee_name" class="form-control" value="{{ customer.first_nominee_name|default:'' }}" disabled>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label"><b>First Nominee Relation:</b></label>
+                                <label class="form-label">Relation:</label>
                                 <input type="text" name="first_nominee_relation" class="form-control" value="{{ customer.first_nominee_relation|default:'' }}" disabled>
                             </div>
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <label class="form-label"><b>First Nominee Mobile:</b></label>
+                                <label class="form-label">Nominee Mobile Number:</label>
                                 <input type="text" name="first_nominee_mobile" class="form-control" value="{{ customer.first_nominee_mobile|default:'' }}" disabled>
                             </div>
                         </div>
 
-                        <!-- ✅ Update Profile Button (Initially Hidden) -->
+                        <!-- Update Profile Button -->
                         <div class="text-center mt-4">
                             <button type="submit" id="saveProfileBtn" class="btn btn-primary">
                                 <i class="fa fa-save"></i> Update Profile
@@ -192,12 +290,12 @@ input:disabled, textarea:disabled {
     </div>
 </div>
 
-<!-- ✅ JavaScript to Enable Editing -->
+<!-- JavaScript to Enable Editing -->
 <script>
 document.getElementById('editProfileBtn').addEventListener('click', function () {
-    var inputs = document.querySelectorAll("#profileForm input, #profileForm textarea");
+    var inputs = document.querySelectorAll("#profileForm input, #profileForm textarea, #profileForm select");
     inputs.forEach(input => input.removeAttribute("disabled"));
-    document.getElementById("saveProfileBtn").style.display = "block";
+    document.getElementById("saveProfileBtn").style.display = "inline-block";
     this.style.display = "none";
 });
 </script>

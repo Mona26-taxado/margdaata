@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card shadow-lg">
                 <div class="card-header bg-primary text-white">
                     <h3><i class="fa fa-user-edit"></i> Edit Member Details</h3>
@@ -11,119 +11,206 @@
                     <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
 
+                        <!-- Basic Information -->
+                        <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-user"></i> Basic Information</h4>
+                        <hr>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label"><b>Full Name:</b></label>
-                                <input type="text" name="name" class="form-control" {{ form.name }}
+                                <label class="form-label fw-bold">Full Name:</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger">{{ form.name.errors.0 }}</div>
+                                {% endif %}
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Mobile:</label>
-                                <input type="text" name="mobile" class="form-control" {{ form.mobile }}
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Email:</label>
-                                <input type="text" name="email" class="form-control" {{ form.email }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Date of Birth:</label>
-                                <input type="text" name="dob" class="form-control"  {{ form.dob }}
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger">{{ form.email.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
                         <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mobile:</label>
+                                {{ form.mobile }}
+                                {% if form.mobile.errors %}
+                                    <div class="text-danger">{{ form.mobile.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Home Mobile:</label>
+                                {{ form.mobile_home }}
+                                {% if form.mobile_home.errors %}
+                                    <div class="text-danger">{{ form.mobile_home.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Date of Birth:</label>
+                                {{ form.dob }}
+                                {% if form.dob.errors %}
+                                    <div class="text-danger">{{ form.dob.errors.0 }}</div>
+                                {% endif %}
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Gender:</label>
                                 {{ form.gender }}
+                                {% if form.gender.errors %}
+                                    <div class="text-danger">{{ form.gender.errors.0 }}</div>
+                                {% endif %}
                             </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Aadhar Number:</label>
-                                <input type="text" name="aadhar" class="form-control" {{ form.aadhar }}
+                                {{ form.aadhar }}
+                                {% if form.aadhar.errors %}
+                                    <div class="text-danger">{{ form.aadhar.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
+                        <!-- Address Information -->
+                        <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-map-marker-alt"></i> Address Information</h4>
+                        <hr>
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label class="form-label fw-bold">Home Address:</label>
                                 {{ form.home_address }}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Home District:</label>
-                                <input type="text" name="home_district" class="form-control" {{ form.home_district }}
+                                {% if form.home_address.errors %}
+                                    <div class="text-danger">{{ form.home_address.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
+                                <label class="form-label fw-bold">Home District:</label>
+                                {{ form.home_district }}
+                                {% if form.home_district.errors %}
+                                    <div class="text-danger">{{ form.home_district.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold">Home State:</label>
-                                <input type="text" name="home_state" class="form-control" {{ form.home_state }}
+                                {{ form.home_state }}
+                                {% if form.home_state.errors %}
+                                    <div class="text-danger">{{ form.home_state.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Reference Name:</label>
+                                {{ form.reference_name }}
+                                {% if form.reference_name.errors %}
+                                    <div class="text-danger">{{ form.reference_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Work Details -->
                         <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-building"></i> Work Details</h4>
                         <hr>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Sector:</label>
-                                <input type="text" name="department" class="form-control" {{ form.department }}
+                                {{ form.department }}
+                                {% if form.department.errors %}
+                                    <div class="text-danger">{{ form.department.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Department:</label>
-                                <input type="text" name="post" class="form-control" {{ form.post }}
+                                <label class="form-label fw-bold">Department/Post:</label>
+                                {{ form.post }}
+                                {% if form.post.errors %}
+                                    <div class="text-danger">{{ form.post.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Posting State:</label>
-                                <input type="text" name="posting_state" class="form-control" {{ form.posting_state }}
+                                {{ form.posting_state }}
+                                {% if form.posting_state.errors %}
+                                    <div class="text-danger">{{ form.posting_state.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Posting District:</label>
-                                <input type="text" name="posting_district" class="form-control" {{ form.posting_district }}
+                                {{ form.posting_district }}
+                                {% if form.posting_district.errors %}
+                                    <div class="text-danger">{{ form.posting_district.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
+                        <!-- Medical Information -->
                         <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-heartbeat"></i> Medical Information</h4>
                         <hr>
                         <div class="row mb-3">
                             <div class="col-md-6">
+                                <label class="form-label fw-bold">Blood Group:</label>
+                                {{ form.blood_group }}
+                                {% if form.blood_group.errors %}
+                                    <div class="text-danger">{{ form.blood_group.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label fw-bold">Disease:</label>
-                                <input type="text" name="disease" class="form-control" {{ form.disease }}
+                                {{ form.disease }}
+                                {% if form.disease.errors %}
+                                    <div class="text-danger">{{ form.disease.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
+                        <!-- Nominee Details -->
                         <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-user-friends"></i> Nominee Details</h4>
                         <hr>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">First Nominee Name:</label>
-                                <input type="text" name="first_nominee_name" class="form-control" {{ form.first_nominee_name }}
+                                {{ form.first_nominee_name }}
+                                {% if form.first_nominee_name.errors %}
+                                    <div class="text-danger">{{ form.first_nominee_name.errors.0 }}</div>
+                                {% endif %}
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">First Nominee Relation:</label>
-                                <input type="text" name="first_nominee_relation" class="form-control" {{ form.first_nominee_relation }}
+                                {{ form.first_nominee_relation }}
+                                {% if form.first_nominee_relation.errors %}
+                                    <div class="text-danger">{{ form.first_nominee_relation.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">First Nominee Mobile:</label>
-                                <input type="text" name="name" class="form-control" {{ form.first_nominee_mobile }}
+                                {{ form.first_nominee_mobile }}
+                                {% if form.first_nominee_mobile.errors %}
+                                    <div class="text-danger">{{ form.first_nominee_mobile.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
-                        <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-file-invoice-dollar"></i> Payment Information</h4>
+                        <!-- Approval Status -->
+                        <h4 class="mt-4 mb-3 fw-bold"><i class="fa fa-check-circle"></i> Approval Status</h4>
                         <hr>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Payment Slip:</label>
-                                {{ form.payment_slip }}
-                            </div>
-                            <div class="col-md-6">
                                 <label class="form-label fw-bold">Approval Status:</label>
                                 {{ form.approved }}
+                                {% if form.approved.errors %}
+                                    <div class="text-danger">{{ form.approved.errors.0 }}</div>
+                                {% endif %}
                             </div>
                         </div>
 
@@ -131,6 +218,9 @@
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fa fa-save"></i> Save Changes
                             </button>
+                            <a href="{% url 'manage_members' %}" class="btn btn-secondary btn-lg ms-2">
+                                <i class="fa fa-arrow-left"></i> Back to Members
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -139,9 +229,43 @@
     </div>
 </div>
 
+<script>
+    // Post options for each department
+    const postOptions = {
+        Government: [
+            "Railway", "Health", "Panchayati Raj", "Irrigation department", "Jal Nigam", "Revenue", "Parivahan", "Bal Vikas Evam Pustahar", "Electric", "Bank", "Police", "Homegaurd", "Others"
+        ],
+        Private: [
+            "Teacher", "Clerk", "Manager", "Peon", "Doctor", "Engineer", "Advocate", "Others"
+        ]
+    };
+    
+    // Department change handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const departmentSelect = document.getElementById('id_department');
+        if (departmentSelect) {
+            departmentSelect.addEventListener('change', function() {
+                const dept = this.value;
+                const postSelect = document.getElementById('id_post');
+                if (postSelect) {
+                    postSelect.innerHTML = '<option value="" selected disabled>Select Post</option>';
+                    if (dept && postOptions[dept]) {
+                        postOptions[dept].forEach(function(opt) {
+                            const option = document.createElement('option');
+                            option.value = opt;
+                            option.textContent = opt;
+                            postSelect.appendChild(option);
+                        });
+                    }
+                }
+            });
+        }
+    });
+</script>
+
 <style>
     .container {
-        max-width: 900px;
+        max-width: 1000px;
     }
     .card {
         border-radius: 12px;
@@ -158,15 +282,18 @@
     }
     .form-label {
         font-weight: bold;
+        margin-bottom: 0.5rem;
     }
     h4 {
         margin-top: 2rem;
         margin-bottom: 1rem;
+        color: #007bff;
     }
     .form-control {
         border-radius: 8px;
         border: 2px solid rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+        padding: 0.75rem;
     }
     .form-control:focus {
         border-color: #007bff;
@@ -176,14 +303,31 @@
         background: linear-gradient(to right, #28a745, #218838);
         color: white;
         font-weight: bold;
-        padding: 14px;
+        padding: 14px 28px;
         border-radius: 8px;
         transition: 0.3s;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
     .btn-success:hover {
         background: linear-gradient(to right, #218838, #1e7e34);
         transform: scale(1.05);
+    }
+    .btn-secondary {
+        background: linear-gradient(to right, #6c757d, #5a6268);
+        color: white;
+        font-weight: bold;
+        padding: 14px 28px;
+        border-radius: 8px;
+        transition: 0.3s;
+        font-size: 1.1rem;
+    }
+    .btn-secondary:hover {
+        background: linear-gradient(to right, #5a6268, #495057);
+        transform: scale(1.05);
+    }
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
     }
 </style>
 {% endblock %}

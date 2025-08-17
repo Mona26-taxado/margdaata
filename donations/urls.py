@@ -3,12 +3,17 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from .views import register_customer, manage_members, edit_member, user_view_members,user_logout, delete_member, add_member, submit_blood_donation, blood_donation_list, update_blood_donation_status, view_members
-from .views import approve_user, login_view,  admin_dashboard, user_dashboard, reject_user, generate_id_card, CustomPasswordResetView, CustomPasswordResetConfirmView, upi_qr
-from .views import generate_payment_receipt, running_sahyog, sahyog_list, edit_sahyog, delete_sahyog, send_notification, manage_notifications, delete_notification
+from .views import (
+    register_customer, custom_admin_login, admin_dashboard, user_dashboard,
+    manage_members, view_members, edit_member, approve_user, reject_user,
+    user_profile, user_download_id_card, upload_receipt, user_receipts, admin_receipts, upload_vyawastha_shulk, user_vyawastha_shulk_receipts, admin_vyawastha_shulk_receipts,
+    submit_blood_donation, blood_donation_list, update_blood_donation_status,
+    send_notification, manage_notifications, delete_notification, upi_qr, user_logout,
+    CustomPasswordResetView, CustomPasswordResetConfirmView,
+    download_members_excel, download_sahyog_excel, user_view_members
+)
+from .views import generate_payment_receipt, running_sahyog, sahyog_list, edit_sahyog, delete_sahyog, generate_id_card, add_member, delete_member, user_view_members, admin_id_card_management, admin_edit_id_card, admin_generate_id_card, admin_download_id_card
 from django.conf.urls.static import static
-from .views import user_profile, upload_receipt, user_receipts, admin_receipts, upload_vyawastha_shulk, user_vyawastha_shulk_receipts, admin_vyawastha_shulk_receipts
-from django.urls import path
 
 
 
@@ -21,7 +26,7 @@ urlpatterns = [
     path("approve-user/<int:user_id>/", approve_user, name="approve_user"),
     path("reject-user/<int:user_id>/", reject_user, name="reject_user"),
     path('receipt/<int:customer_id>/', generate_payment_receipt, name='generate_payment_receipt'),
-    path('login/', login_view, name='login'),
+    path('login/', custom_admin_login, name='login'),
     path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
     path("user-dashboard/", user_dashboard, name="user_dashboard"),  # ✅ Ensure this exists
     path('manage-members/', manage_members, name='manage_members'),
@@ -35,10 +40,17 @@ urlpatterns = [
 
     # ✅ Only Custom Admins (is_staff) can access these
     path('edit-sahyog/<int:sahyog_id>/', edit_sahyog, name='edit_sahyog'),
-    path('delete-sahyog/<int:sahyog_id>/', delete_sahyog, name='delete_sahyog'),
+    path('delete-sahyog/<int:sahyog_id>/', delete_sahyog, name="delete_sahyog"),
     path("send-notification/", send_notification, name="send_notification"),
     path("manage-notifications/", manage_notifications, name="manage_notifications"),
     path("admin/delete_notification/<int:notification_id>/", delete_notification, name="delete_notification"),
+    
+    # Excel Download URLs
+    path("download-members-excel/", download_members_excel, name="download_members_excel"),
+    path("download-sahyog-excel/", download_sahyog_excel, name="download_sahyog_excel"),
+    
+    # Logout URL
+    path("logout/", user_logout, name="logout"),
 
 
 
@@ -47,6 +59,7 @@ urlpatterns = [
 
 
     path("user-profile/", user_profile, name="user_profile"),  # ✅ Profile Page URL
+    path("user-download-id-card/", user_download_id_card, name="user_download_id_card"),  # ✅ User ID Card Download
     path("upload_receipt/", upload_receipt, name="upload_receipt"),  # Removed sahyog_id
     path("user_receipts/", user_receipts, name="user_receipts"),
     path("admin_receipts/", admin_receipts, name="admin_receipts"),
@@ -57,6 +70,12 @@ urlpatterns = [
     path("donations/", blood_donation_list, name="blood_donation_list"),
     path("update_donation/<int:donation_id>/<str:status>/", update_blood_donation_status, name="update_blood_donation_status"),
     path("generate_id_card/", generate_id_card, name="generate_id_card"),
+    
+    # Admin ID Card Management URLs
+    path("admin/id-cards/", admin_id_card_management, name="admin_id_card_management"),
+    path("admin/id-cards/edit/<int:customer_id>/", admin_edit_id_card, name="admin_edit_id_card"),
+    path("admin/id-cards/generate/<int:customer_id>/", admin_generate_id_card, name="admin_generate_id_card"),
+    path("admin/id-cards/download/<int:customer_id>/", admin_download_id_card, name="admin_download_id_card"),
 
 
     

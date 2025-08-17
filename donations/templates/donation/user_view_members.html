@@ -41,8 +41,8 @@
                 <tr>
                     <th>S No</th>
                     <th>Name</th>
-                    <th>State</th>
-                    <th>District</th>
+                    <th>Home State</th>
+                    <th>Home District</th>
                     <th>Registration Date</th>
                 </tr>
             </thead>
@@ -51,12 +51,24 @@
                 <tr>
                     <td>{{ user.serial_number }}</td>
                     <td>{{ user.name }}</td>
-                    <td>{{ user.posting_state }}</td>
-                    <td>{{ user.posting_district }}</td>
+                    <td>
+                        {% if user.home_state %}
+                            <span class="badge bg-secondary">{{ user.home_state }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.home_district %}
+                            <span class="badge bg-warning text-dark">{{ user.home_district }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
                     <td>{{ user.created_at|date:"d M Y, h:i A" }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="8" class="text-center text-muted">No approved users found.</td></tr>
+                <tr><td colspan="5" class="text-center text-muted">No approved users found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

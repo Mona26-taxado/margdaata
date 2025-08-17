@@ -53,6 +53,8 @@ class Customer(models.Model):
     dob = models.DateField(null=True)
     mobile = models.CharField(max_length=15, unique=True)
     mobile_home = models.CharField(max_length=15, blank=True, null=True)
+    aadhar = models.CharField(max_length=12, blank=True, null=True, help_text="12-digit Aadhar number")
+    blood_group = models.CharField(max_length=5, blank=True, null=True, help_text="Blood group (e.g., A+, B-, O+)")
 
     # ✅ Nominee Details
     first_nominee_name = models.CharField(max_length=255, null=True, blank=True)  # ✅ Exists
@@ -66,12 +68,17 @@ class Customer(models.Model):
     posting_district = models.CharField(max_length=100, null=True, blank=True)
     home_address = models.TextField()
     home_district = models.CharField(max_length=100)
+    home_state = models.CharField(max_length=100, blank=True, null=True)
     disease = models.CharField(max_length=100, blank=True, null=True)
+    reference_name = models.CharField(max_length=100, blank=True, null=True, help_text="Optional reference person name")
     
-    # ✅ Fix Password Storage (Use Hashed Passwords)
+        # ✅ Fix Password Storage (Use Hashed Passwords)
     password = models.CharField(max_length=255, blank=True, null=True)
+    
+    # ✅ ID Card Photo
+    photo = models.ImageField(upload_to='id_cards/', blank=True, null=True, help_text="Upload a passport size photo for ID card")
 
-    approved = models.BooleanField(default=False)  
+    approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

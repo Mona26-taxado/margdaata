@@ -99,12 +99,43 @@
             font-size: 0.9em;
             margin-top: 5px;
         }
+        .input-group .btn-outline-secondary {
+            border-color: #27ae60;
+            color: #27ae60;
+            background: transparent;
+        }
+        .input-group .btn-outline-secondary:hover {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .input-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2 class="text-center"><i class="fa fa-user-plus"></i> Member Registration</h2>
+    
+    <!-- Payment section moved outside the form -->
+    <div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
+        <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
+        <div>
+            <img src="{% url 'upi_qr' %}" alt="Pay ₹50 to Margdata Trust UPI" style="max-width: 200px;" />
+        </div>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='https://rzp.io/rzp/X0X5V9Id'">Pay ₹50</button>
+        <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
+        <h6 class="text-danger font-weight-bold">(सर्वप्रथम कृपया 50₹ वार्षिक व्यवस्था सहयोग राशि ट्रस्ट को दान कर सहयोग करें।)
+        </h6>
+    </div>
+    
     <form id="registrationForm" method="POST" enctype="multipart/form-data" action="{% url 'register_customer' %}">
         
         {% csrf_token %}
@@ -118,18 +149,6 @@
     </div>
 {% endif %}
 {% load static %}
-
-<!-- Payment section moved to top -->
-<div class="text-center mt-4 p-3" style="background: #ffffff; border-radius: 8px;">
-    <h5 class="text-dark font-weight-bold">Scan & Pay</h5>
-    <div>
-        <img src="{% url 'upi_qr' %}" alt="Pay ₹50 to Margdata Trust UPI" style="max-width: 200px;" />
-    </div>
-    <button class="btn btn-primary" onclick="window.location.href='https://rzp.io/rzp/X0X5V9Id'">Pay ₹50</button>
-    <p class="text-dark mt-2"><strong>UPI ID: margdatatrust@sbi</strong></p>
-    <h6 class="text-danger font-weight-bold">(सर्वप्रथम कृपया 50₹ वार्षिक व्यवस्था सहयोग राशि ट्रस्ट को दान कर सहयोग करें।)
-    </h6>
-</div>
 
         <div class="row mt-3">
             <div class="col-md-6">
@@ -158,7 +177,12 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label"><i class="fa fa-secure"></i> Password</label>
-                {{ form.password }}
+                <div class="input-group">
+                    {{ form.password }}
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                        <i class="fa fa-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
                 {% if form.password.errors %}
                     <div class="error-message">{{ form.password.errors.0 }}</div>
                 {% endif %}
@@ -212,6 +236,16 @@
                 {{ form.post }}
                 {% if form.post.errors %}
                     <div class="error-message">{{ form.post.errors.0 }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label class="form-label"><i class="fa fa-user-friends"></i> Reference Name (Optional)</label>
+                {{ form.reference_name }}
+                {% if form.reference_name.errors %}
+                    <div class="error-message">{{ form.reference_name.errors.0 }}</div>
                 {% endif %}
             </div>
         </div>
@@ -272,6 +306,28 @@
                             postSelect.appendChild(option);
                         });
                     }
+                }
+            });
+        }
+
+        // Password toggle functionality
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordField = document.getElementById('id_password');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        if (togglePassword && passwordField) {
+            togglePassword.addEventListener('click', function() {
+                // Toggle password visibility
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                // Toggle eye icon
+                if (type === 'text') {
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
                 }
             });
         }

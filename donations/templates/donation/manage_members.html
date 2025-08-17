@@ -116,7 +116,6 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Mobile</th>
-                            <th>Transaction ID</th>
                             <th>Registered On</th>
                             <th>Payment Slip</th>
                             <th>Actions</th>
@@ -129,7 +128,6 @@
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.mobile }}</td>
-                            <td>{{ user.transaction_id }}</td>
                             <td>{{ user.user.date_joined|date:"d M Y" }}</td>
                             <td>
                                 {% if user.payment_slip %}
@@ -229,7 +227,8 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Mobile</th>
-                            <th>Transaction ID</th>
+                            <th>Home State</th>
+                            <th>Home District</th>
                             <th>Registered On</th>
                             <th>Actions</th>
                         </tr>
@@ -241,7 +240,20 @@
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.mobile }}</td>
-                            <td>{{ user.transaction_id }}</td>
+                            <td>
+                                {% if user.home_state %}
+                                    <span class="badge bg-secondary">{{ user.home_state }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.home_district %}
+                                    <span class="badge bg-warning text-dark">{{ user.home_district }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
                             <td>{{ user.user.date_joined|date:"d M Y" }}</td>
                             <td>
                                 <a href="{% url 'edit_member' user.id %}" class="btn btn-primary btn-sm">

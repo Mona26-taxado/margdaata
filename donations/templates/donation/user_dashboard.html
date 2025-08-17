@@ -84,6 +84,42 @@
         text-align: justify;
     }
 
+    /* Dashboard Cards Styling */
+    .dashboard-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .dashboard-card .fa-3x {
+        margin-bottom: 1rem;
+    }
+
+    .text-purple {
+        color: #6f42c1 !important;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #5a32a3;
+        border-color: #5a32a3;
+        color: white;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .custom-card {
@@ -97,6 +133,18 @@
 
         .custom-card p {
             font-size: 1rem;
+        }
+
+        .dashboard-card .card-body {
+            padding: 1rem;
+        }
+
+        .dashboard-card h5 {
+            font-size: 1rem;
+        }
+
+        .dashboard-card .fa-3x {
+            font-size: 2rem;
         }
     }
     .marquee-container {
@@ -390,11 +438,150 @@
               class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
             >
               <div>
-                <h3 class="fw-bold mb-3">Dashboard</h3>
+                <h3 class="fw-bold mb-3">Welcome, {{ user_name }}!</h3>
                 <h6 class="op-7 mb-2">"पारस्परिक सहयोग भावना से परस्पर सहयोग करें।"</h6>
               </div>
               
             </div>
+            <!-- Navigation Cards Section -->
+            <div class="container mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <h4 class="mb-4 text-center"><i class="fas fa-th-large"></i> Quick Access</h4>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <!-- Profile Management Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-circle fa-3x text-primary"></i>
+                                </div>
+                                <h5 class="card-title">Profile Management</h5>
+                                <p class="card-text small">Manage your personal information and settings</p>
+                                <a href="{% url 'user_profile' %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Manage Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Member Directory Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-users fa-3x text-success"></i>
+                                </div>
+                                <h5 class="card-title">Member Directory</h5>
+                                <p class="card-text small">View all approved members of the trust</p>
+                                <a href="{% url 'user_view_members' %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-eye"></i> View Members
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Digital ID Card Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-id-card fa-3x text-info"></i>
+                                </div>
+                                <h5 class="card-title">Digital ID Card</h5>
+                                <p class="card-text small">Download your personalized ID card</p>
+                                <a href="{% url 'user_download_id_card' %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-download"></i> Download ID
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Receipt Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-upload fa-3x text-warning"></i>
+                                </div>
+                                <h5 class="card-title">Upload Receipt</h5>
+                                <p class="card-text small">Upload your donation receipts</p>
+                                <a href="{% url 'upload_receipt' %}" class="btn btn-warning btn-sm">
+                                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Running Sahyog List Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-globe fa-3x text-purple"></i>
+                                </div>
+                                <h5 class="card-title">Running Sahyog</h5>
+                                <p class="card-text small">View active donation campaigns</p>
+                                <a href="{% url 'sahyog_list' %}" class="btn btn-purple btn-sm">
+                                    <i class="fas fa-list"></i> View Campaigns
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View All Sahyog Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-eye fa-3x text-secondary"></i>
+                                </div>
+                                <h5 class="card-title">View All Sahyog</h5>
+                                <p class="card-text small">View all your uploaded receipts</p>
+                                <a href="{% url 'user_receipts' %}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-folder-open"></i> View Receipts
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Vyawastha Shulk Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-file-upload fa-3x text-danger"></i>
+                                </div>
+                                <h5 class="card-title">Upload Vyawastha Shulk</h5>
+                                <p class="card-text small">Upload administrative fee receipts</p>
+                                <a href="{% url 'upload_vyawastha_shulk' %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-upload"></i> Upload Fee
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Donate Blood Card -->
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="card shadow-sm h-100 dashboard-card" style="border-radius: 15px; transition: transform 0.3s ease;">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-tint fa-3x text-danger"></i>
+                                </div>
+                                <h5 class="card-title">Donate Blood</h5>
+                                <p class="card-text small">Register for blood donation</p>
+                                <a href="{% url 'submit_blood_donation' %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-heart"></i> Donate Blood
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trust Information Card -->
             <div class="container mt-4">
               <div class="row justify-content-center">
                   <div class="col-lg-10 col-md-12">

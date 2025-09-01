@@ -1574,6 +1574,34 @@ def generate_user_id_card(customer):
         import os
         import math
         
+        # Register good quality fonts for English text
+        good_fonts_available = False
+        try:
+            import glob
+            import platform
+            
+            if platform.system() == "Windows":
+                # Try to use Calibri (modern, clean font)
+                calibri_paths = glob.glob("C:/Windows/Fonts/calibri*.ttf")
+                calibrib_paths = glob.glob("C:/Windows/Fonts/calibrib*.ttf")
+                
+                if calibri_paths and calibrib_paths:
+                    pdfmetrics.registerFont(TTFont('GoodFont', calibri_paths[0]))
+                    pdfmetrics.registerFont(TTFont('GoodFontBold', calibrib_paths[0]))
+                    good_fonts_available = True
+                else:
+                    # Fallback to Arial
+                    arial_paths = glob.glob("C:/Windows/Fonts/arial*.ttf")
+                    arialbd_paths = glob.glob("C:/Windows/Fonts/arialbd*.ttf")
+                    
+                    if arial_paths and arialbd_paths:
+                        pdfmetrics.registerFont(TTFont('GoodFont', arial_paths[0]))
+                        pdfmetrics.registerFont(TTFont('GoodFontBold', arialbd_paths[0]))
+                        good_fonts_available = True
+        except Exception as e:
+            print(f"Font registration failed: {e}")
+            good_fonts_available = False
+        
         # Create the final ID card using your template's natural dimensions
         final_buffer = BytesIO()
         
@@ -1603,46 +1631,18 @@ def generate_user_id_card(customer):
         M = int(min(page_width, page_height) * 0.05)
         left, right = M, page_width - M
         top, bottom = page_height - M, M
-
-        # Sizes (adjusted to prevent text cutoff)
-        fs_small  = int(page_height * 0.020)   # smaller header text to prevent cutoff
-        fs_body   = int(page_height * 0.032)   # values
-        fs_footer = int(page_height * 0.028)
-        fs_labels = int(page_height * 0.018)   # smaller labels to make them less prominent
-        lh_small  = int(fs_small * 1.18)
-        lh_row    = int(fs_body  * 1.14)       # default row height
-
-        # ---------- HEADER LINES under logo ----------
-        c.setFillColor(colors.black)
-        c.setFont("Helvetica", fs_small)
-        header_y = top - int(page_height * 0.13)
-
-        # Check if text fits and adjust if needed
-        reg_text = "Regd. Under Indian Trust Act -1882, Reg.No. 85/2025"
-        addr1_text = "Head Office - 614/P-038 A Raheemnagar, Dudauli,"
-        addr2_text = "Uttar Pradesh, Lucknow - 226021"
         
-        # Calculate available width
-        available_width = right - left - int(page_width * 0.02)  # 2% margin
-        
-        # Check if text fits, if not, reduce font size further
-        c.setFont("Helvetica-Bold", fs_small)
-        if c.stringWidth(reg_text, "Helvetica-Bold", fs_small) > available_width:
-            fs_small = int(page_height * 0.018)  # even smaller if needed
-            lh_small = int(fs_small * 1.18)
-            c.setFont("Helvetica-Bold", fs_small)
-        
-        # Ensure black color for all header text
-        c.setFillColor(colors.black)
-        c.drawString(left, header_y, reg_text)
-        header_y -= lh_small
-        c.drawString(left, header_y, addr1_text)
-        header_y -= lh_small
-        c.drawString(left, header_y, addr2_text)
+        # Center the content area - move text towards center
+        content_width = int(page_width * 0.8)  # Use 80% of page width for content (increased for long emails)
+        content_start = (page_width - content_width) // 2  # Center horizontally
 
-        # ---------- BIGGER, CENTERED PASSPORT PHOTO (NO BORDER) ----------
-        y = header_y - int(lh_small * 0.9)
-        photo_size = int(min(page_width, page_height) * 0.45)  # bigger
+        # Consistent font sizes for clean look
+        fs_text   = int(page_height * 0.028)   # same size for both labels and values
+        lh_row    = int(fs_text * 1.2)         # consistent line height
+
+        # ---------- PHOTO POSITION (moved down and made bigger) ----------
+        y = top - int(page_height * 0.20)  # Start photo lower down (was 0.15, now 0.08)
+        photo_size = int(min(page_width, page_height) * 0.44)  # Increased photo size for better visibility
         photo_x = (page_width - photo_size) // 2
         photo_y = y - photo_size
 
@@ -1658,11 +1658,11 @@ def generate_user_id_card(customer):
             except Exception:
                 pass
 
-        # gap after photo
-        y = photo_y - int(lh_row * 0.7)
+        # gap after photo - adjusted for new photo position
+        y = photo_y - int(lh_row * 1.0)
 
         # ---------- INFO BLOCK (TIGHT LABEL:VALUE) ----------
-        # Labels without a space before colon, e.g., "Name:"
+        # Use English labels with clean formatting
         items = [
             ("Name:",              getattr(customer, "name", "") or ""),
             ("Email:",             getattr(customer, "email", "") or ""),
@@ -1674,13 +1674,14 @@ def generate_user_id_card(customer):
             ("Registration Date:", customer.created_at.strftime("%d.%m.%Y") if getattr(customer, "created_at", None) else "")
         ]
 
-        # Dynamic label column = exact width of the widest label + tiny gutter
-        c.setFont("Helvetica-Bold", fs_labels)
-        widest = max(c.stringWidth(lbl, "Helvetica-Bold", fs_labels) for lbl, _ in items)
-        gutter = int(page_width * 0.008)  # ~0.8% width
-        label_x = left
-        value_x = left + widest + gutter
-        value_max_w = right - value_x
+        # Use good fonts - labels bold, values regular for professional look
+        label_font = "GoodFontBold" if good_fonts_available else "Helvetica-Bold"  # Labels bold
+        value_font = "GoodFont" if good_fonts_available else "Helvetica"
+        
+        c.setFont(label_font, fs_text)
+        # Calculate exact width for each label and add minimal space
+        label_x = content_start  # Start from center position instead of left margin
+        gutter = 5  # Fixed small gap in pixels, not percentage
 
         # Helper function for smart text wrapping
         def _wrap_value_lines(c, text, font, size, max_w, max_lines=2):
@@ -1732,14 +1733,32 @@ def generate_user_id_card(customer):
             return out[:max_lines]
 
         for lbl, val in items:
-            # draw label (smaller and less prominent)
-            c.setFont("Helvetica-Bold", fs_labels)
+            # draw label (bold for professional look)
+            c.setFont(label_font, fs_text)
             c.drawString(label_x, y, lbl)
 
-            # draw value (email can wrap up to 2 lines)
-            c.setFont("Helvetica", fs_body)
-            lines = _wrap_value_lines(c, str(val), "Helvetica", fs_body, value_max_w,
-                                      max_lines=2 if lbl == "Email:" else 1)
+            # calculate value position for this specific label
+            c.setFont(label_font, fs_text)
+            label_width = c.stringWidth(lbl, label_font, fs_text)
+            value_x = label_x + label_width + gutter  # individual calculation for each label
+            value_max_w = content_start + content_width - value_x  # Use content area boundary
+
+            # draw value (regular weight, same font size)
+            c.setFont(value_font, fs_text)
+            
+            # Special handling for email - always keep in single line
+            if lbl == "Email:":
+                # Check if email fits in single line, if not reduce font size
+                email_width = c.stringWidth(str(val), value_font, fs_text)
+                if email_width > value_max_w:
+                    # Calculate reduced font size to fit email in single line
+                    reduced_font_size = int(fs_text * (value_max_w / email_width) * 0.95)  # 95% for safety margin
+                    c.setFont(value_font, reduced_font_size)
+                    lines = [str(val)]  # Single line
+                else:
+                    lines = [str(val)]  # Single line with normal font
+            else:
+                lines = _wrap_value_lines(c, str(val), value_font, fs_text, value_max_w, max_lines=1)
             for i, line in enumerate(lines):
                 c.drawString(value_x, y - i * lh_row, line)
 
@@ -1747,14 +1766,24 @@ def generate_user_id_card(customer):
             used_lines = len(lines)
             y -= lh_row * used_lines
 
-            # extra small gap between different fields (keeps it airy but tight)
-            y -= int(lh_row * 0.12)
+            # better spacing between different fields for professional look
+            y -= int(lh_row * 0.25)
 
-        # ---------- FOOTER ----------
-        y = max(bottom + int(lh_row * 0.9), y)
-        c.setFont("Helvetica-Bold", fs_footer)
-        c.drawCentredString(page_width / 2, bottom + int(lh_row * 1.9), "Official Website : www.margdata.in")
-        c.drawCentredString(page_width / 2, bottom + int(lh_row * 0.9), "Helpline No. : 9250348657")
+                # ---------- MEMBER ID SECTION ----------
+        # Add Member ID after all other fields with some spacing
+        y -= int(lh_row * 0.5)  # Small gap after last field
+        
+        # Member ID section
+        c.setFont(label_font, fs_text)
+        member_id_label = "Member ID:"
+        c.drawString(label_x, y, member_id_label)
+        
+        # Calculate value position for Member ID
+        label_width = c.stringWidth(member_id_label, label_font, fs_text)
+        member_value_x = label_x + label_width + gutter
+        
+        c.setFont(value_font, fs_text)
+        c.drawString(member_value_x, y, customer.md_code)
         
         c.save()
         

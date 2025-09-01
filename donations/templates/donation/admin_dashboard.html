@@ -89,7 +89,14 @@
                 <i class="gg-menu-left"></i>
               </button>
             </div>
-            <button class="topbar-toggler more">
+            <!-- Mobile direct logout icon in header -->
+            <form action="{% url 'logout' %}" method="post" class="d-lg-none ms-auto me-2 mb-0">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Logout" aria-label="Logout">
+                <i class="fa fa-sign-out-alt fa-lg"></i>
+              </button>
+            </form>
+            <button class="topbar-toggler more d-none d-lg-inline-block">
               <i class="gg-more-vertical-alt"></i>
             </button>
           </div>
@@ -195,7 +202,7 @@
         <div class="main-header">
           <div class="main-header-logo">
             <!-- Logo Header -->
-            <div class="logo-header" data-background-color="dark">
+            <div class="logo-header" data-background-color="dark" style="position:relative;">
               <a href="index.html" class="logo">
                 <img
                   src="{% static 'assets/img/kaiadmin/logo_light.svg' %}"
@@ -212,7 +219,14 @@
                   <i class="gg-menu-left"></i>
                 </button>
               </div>
-              <button class="topbar-toggler more">
+              <!-- Direct logout icon in header (visible on all sizes) -->
+              <form action="{% url 'logout' %}" method="post" class="mb-0" style="position:absolute; right:12px; top:10px; z-index:2000;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Logout" aria-label="Logout" style="color:#dc3545 !important;">
+                  <i class="fa fa-sign-out-alt fa-lg" style="color:#dc3545 !important;"></i>
+                </button>
+              </form>
+              <button class="topbar-toggler more d-none d-lg-inline-block">
                 <i class="gg-more-vertical-alt"></i>
               </button>
             </div>
@@ -237,7 +251,7 @@
 
               <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
 
-                <li class="nav-item topbar-user dropdown hidden-caret">
+                <li class="nav-item topbar-user dropdown hidden-caret d-none d-lg-block">
                   <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"  aria-expanded="false">
                     <span class="profile-username">
                       <span class="op-7">Hi,</span>
@@ -257,6 +271,15 @@
                       </li>
                     </div>
                   </ul>
+                </li>
+                <!-- Mobile Logout Button (visible on small screens) -->
+                <li class="nav-item d-lg-none ms-2">
+                  <form action="{% url 'logout' %}" method="post" class="mb-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Logout" aria-label="Logout">
+                      <i class="fa fa-sign-out-alt fa-lg"></i>
+                    </button>
+                  </form>
                 </li>
               </ul>
             </div>

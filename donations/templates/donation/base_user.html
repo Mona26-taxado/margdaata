@@ -222,7 +222,7 @@
                   <i class="gg-menu-left"></i>
                 </button>
               </div>
-              <button class="topbar-toggler more">
+              <button class="topbar-toggler more d-none d-lg-inline-block">
                 <i class="gg-more-vertical-alt"></i>
               </button>
             </div>
@@ -259,7 +259,17 @@
                   </ul>
                 </li>
 
-                <li class="nav-item topbar-user dropdown hidden-caret">
+                <!-- Mobile Logout Button (visible on small screens) -->
+                <li class="nav-item d-lg-none ms-2">
+                  <form action="{% url 'logout' %}" method="post" class="mb-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Logout" aria-label="Logout">
+                      <i class="fa fa-sign-out-alt fa-lg"></i>
+                    </button>
+                  </form>
+                </li>
+
+                <li class="nav-item topbar-user dropdown hidden-caret d-none d-lg-block">
                   <a
                     class="dropdown-toggle profile-pic"
                     data-bs-toggle="dropdown"

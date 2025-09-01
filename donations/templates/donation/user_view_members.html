@@ -43,6 +43,7 @@
                     <th>Name</th>
                     <th>Home State</th>
                     <th>Home District</th>
+                    <th>Referred by</th>
                     <th>Registration Date</th>
                 </tr>
             </thead>
@@ -65,10 +66,17 @@
                             <span class="text-muted">-</span>
                         {% endif %}
                     </td>
+                    <td>
+                        {% if user.refreshed_by_name %}
+                            <span class="badge bg-info text-white">{{ user.refreshed_by_name }}</span>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
                     <td>{{ user.created_at|date:"d M Y, h:i A" }}</td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5" class="text-center text-muted">No approved users found.</td></tr>
+                <tr><td colspan="6" class="text-center text-muted">No approved users found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

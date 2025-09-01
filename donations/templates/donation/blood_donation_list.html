@@ -9,30 +9,57 @@
     .table-responsive {
         overflow-x: auto;
         display: block;
+        width: 100%;
+    }
+
+    .table {
+        min-width: 800px; /* Minimum width to prevent overcrowding */
+        border-collapse: collapse;
     }
 
     /* Responsive Table for Mobile */
     @media (max-width: 768px) {
-        table {
-            width: 100%;
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
+        .table {
+            min-width: 400px; /* Further reduced for mobile */
         }
 
-        thead {
-            display: table-header-group; /* Keeps headers visible */
-        }
-
-        tr, td, th {
-            display: table-cell;
+        td, th {
+            font-size: 12px;
+            padding: 6px 4px;
             text-align: center;
             vertical-align: middle;
         }
 
+        /* Hide less important columns on very small screens for admins only */
+        .hide-mobile {
+            display: none;
+        }
+
+        /* For users, show essential columns with better spacing */
+        .user-essential {
+            display: table-cell !important;
+        }
+
+        /* Compact action buttons */
+        .dropdown .btn {
+            padding: 4px 8px;
+            font-size: 11px;
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .table {
+            min-width: 500px;
+        }
+        
         td, th {
-            font-size: 14px;
-            padding: 8px;
+            font-size: 11px;
+            padding: 4px 2px;
         }
     }
 
@@ -82,18 +109,18 @@
         <table class="table table-bordered table-hover">
             <thead class="table-dark">
                 <tr>
-                    <th>S.No</th>
-                    <th>Name</th>
-                    <th>Blood Group</th>
+                    <th class="user-essential">S.No</th>
+                    <th class="user-essential">Name</th>
+                    <th class="user-essential">Blood Group</th>
                     {% if request.user.is_staff %}
-                    <th>Contact</th> <!-- Mobile number only for admins -->
+                    <th class="hide-mobile">Contact</th> <!-- Mobile number only for admins -->
                     {% endif %}
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Apply Date</th>
+                    <th class="{% if request.user.is_staff %}hide-mobile{% else %}user-essential{% endif %}">Category</th>
+                    <th class="user-essential">Status</th>
+                    <th class="{% if request.user.is_staff %}hide-mobile{% else %}user-essential{% endif %}">Apply Date</th>
                     
                     {% if request.user.is_staff %}
-                    <th>Self Declaration</th>
+                    <th class="hide-mobile">Self Declaration</th>
                     <th>Actions</th>
                     {% endif %}
                 </tr>
@@ -101,14 +128,14 @@
             <tbody>
                 {% for donation in donations %}
                 <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ donation.name }}</td>
-                    <td>{{ donation.blood_group }}</td>
+                    <td class="user-essential">{{ forloop.counter }}</td>
+                    <td class="user-essential">{{ donation.name }}</td>
+                    <td class="user-essential">{{ donation.blood_group }}</td>
                     {% if request.user.is_staff %}
-                    <td>{{ donation.contact }}</td> <!-- Show only to admin -->
+                    <td class="hide-mobile">{{ donation.contact }}</td> <!-- Show only to admin -->
                     {% endif %}
-                    <td>{{ donation.category }}</td>
-                    <td>
+                    <td class="{% if request.user.is_staff %}hide-mobile{% else %}user-essential{% endif %}">{{ donation.category }}</td>
+                    <td class="user-essential">
                         {% if donation.status == "Pending" %}
                             <span class="badge bg-warning">{{ donation.status }}</span>
                         {% elif donation.status == "Approved" %}
@@ -117,20 +144,18 @@
                             <span class="badge bg-primary">{{ donation.status }}</span>
                         {% endif %}
                     </td>
-                    <td>{{ donation.created_at|date:"d M Y, h:i A" }}</td>
+                    <td class="{% if request.user.is_staff %}hide-mobile{% else %}user-essential{% endif %}">{{ donation.created_at|date:"d M Y, h:i A" }}</td>
                     {% if request.user.is_staff %}
-                    <td>
+                    <td class="hide-mobile">
                         
                         {% if donation.self_declaration %}
                         <a href="{{ donation.self_declaration.url }}" class="btn btn-warning btn-sm" target="_blank">
                             <i class="fa fa-file"></i> View
                         </a>
-                        {% endif %}
                         {% else %}
                         No File
                         {% endif %}
                     </td>
-                    {% if request.user.is_staff %}
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">

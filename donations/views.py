@@ -1667,7 +1667,7 @@ def generate_user_id_card(customer):
             ("Name:",              getattr(customer, "name", "") or ""),
             ("Email:",             getattr(customer, "email", "") or ""),
             ("Mobile:",            getattr(customer, "mobile", "") or ""),
-            ("Date of Birth:",     getattr(customer, "dob_str", "") or "05.05.1990"),
+            ("Date of Birth:",     customer.dob.strftime("%d.%m.%Y") if customer.dob else "Not Set"),
             ("Blood Group:",       getattr(customer, "blood_group", "") or "Not Set"),
             ("State:",             getattr(customer, "home_state", "") or "Not Set"),
             ("District:",          getattr(customer, "home_district", "") or "Not Set"),

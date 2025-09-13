@@ -353,30 +353,14 @@
               </nav>
 
               <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                <li
-                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
-                >
-                  <a
-                    class="nav-link dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                    href="#"
-                    role="button"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                  >
-                    <i class="fa fa-search"></i>
-                  </a>
-                  <ul class="dropdown-menu dropdown-search animated fadeIn">
-                    <form class="navbar-left navbar-form nav-search">
-                      <div class="input-group">
-                        <input
-                          type="text"
-                          placeholder="Search ..."
-                          class="form-control"
-                        />
-                      </div>
-                    </form>
-                  </ul>
+                <!-- Mobile Logout Icon (replaces 3-dot menu) -->
+                <li class="nav-item d-flex d-lg-none">
+                  <form action="{% url 'logout' %}" method="post" class="mb-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-danger p-2" title="Logout" aria-label="Logout">
+                      <i class="fa fa-sign-out-alt fa-lg"></i>
+                    </button>
+                  </form>
                 </li>
 
                 <li class="nav-item topbar-user dropdown hidden-caret d-none d-lg-block">
@@ -429,15 +413,6 @@
                   </ul>
                 </li>
 
-                <!-- Mobile Logout Button (visible on small screens) -->
-                <li class="nav-item d-lg-none ms-2">
-                  <form action="{% url 'logout' %}" method="post" class="mb-0">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Logout" aria-label="Logout">
-                      <i class="fa fa-sign-out-alt fa-lg"></i>
-                    </button>
-                  </form>
-                </li>
               </ul>
             </div>
           </nav>
@@ -712,7 +687,7 @@
       
         <footer class="footer">
             <div class="container text-center py-3">
-                <span>© 2025, made with ❤️ by <a href="https://margdata.com" target="_blank">Margdata</a></span>
+                <span>© 2025, made with ❤️ by <a href="https://margdata.in" target="_blank">Margdata</a></span>
                 <span class="ml-3">Designed by <a href="https://blastercode.com" target="_blank">Blastercode</a></span>
             </div>
         </footer>
